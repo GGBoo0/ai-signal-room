@@ -3,6 +3,8 @@ name: Deploy Signal Room to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,8 +17,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VITE_API_ORIGIN: https://ai-signal-room.zzboof.chatgpt.site
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +27,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+      - name: Fetch scheduled market snapshot
+        run: node scripts/fetch-market-snapshot.mjs
       - name: Build site
         run: npm run build
       - name: Configure Pages

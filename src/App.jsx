@@ -438,6 +438,7 @@ const uiCopy = {
     reset: "RESET VIEW",
     feedSnapshot: "DATA FEED: SNAPSHOT",
     feedLive: "DATA FEED: LIVE / DELAYED",
+    feedScheduled: "DATA FEED: SCHEDULED / DELAYED",
     feedUpdating: "DATA FEED: UPDATING",
     emergingNote: "EMERGING CLUSTERS",
     emergingNote2: "OUTSIDE THE USUAL VECTORS.",
@@ -514,6 +515,7 @@ const uiCopy = {
     reset: "보기 초기화",
     feedSnapshot: "데이터 피드: 스냅샷",
     feedLive: "데이터 피드: 실시간 지연",
+    feedScheduled: "데이터 피드: 예약 갱신 / 지연",
     feedUpdating: "데이터 피드: 업데이트 중",
     emergingNote: "신흥 클러스터",
     emergingNote2: "익숙한 벡터 밖의 가속.",
@@ -609,6 +611,8 @@ const newsHeadlineKo = {
 };
 
 const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN ?? "").replace(/\/$/, "");
+const IS_STATIC_PAGES = import.meta.env.BASE_URL !== "/" && !API_ORIGIN;
+let marketSnapshotPromise;
 
 function apiUrl(path) {
   return `${API_ORIGIN}${path}`;
@@ -694,7 +698,28 @@ function formatYahooMove(signal, currentValue, previousValue) {
   return `${percent >= 0 ? "+" : "−"}${Math.abs(percent).toFixed(2)}%`;
 }
 
+async function fetchStaticMarket(signal) {
+  marketSnapshotPromise ??= fetch(`${import.meta.env.BASE_URL}market.json?cache=${Date.now()}`, { cache: "no-store" }).then((response) => {
+    if (!response.ok) throw new Error(`Market snapshot failed: ${response.status}`);
+    return response.json();
+  });
+  const snapshot = await marketSnapshotPromise;
+  const quote = snapshot.quotes?.[signal.symbol];
+  if (!quote || !Number.isFinite(Number(quote.price))) throw new Error("Market snapshot returned no quote");
+  const price = Number(quote.price);
+  const previousClose = Number(quote.previousClose);
+  return {
+    ...signal,
+    value: formatYahooValue(signal, price),
+    move: formatYahooMove(signal, price, previousClose),
+    points: buildSparkline((quote.closes ?? []).map(Number)) ?? signal.points,
+    feed: "scheduled",
+    updatedAt: quote.updatedAt ?? snapshot.generatedAt ?? Date.now(),
+  };
+}
+
 async function fetchYahooMarket(signal) {
+  if (IS_STATIC_PAGES) return fetchStaticMarket(signal);
   const response = await fetch(apiUrl(`/api/market/${encodeURIComponent(signal.symbol)}?range=1d&interval=5m&includePrePost=false`), { headers: { accept: "application/json" } });
   if (!response.ok) throw new Error(`Market feed failed: ${response.status}`);
   const payload = await response.json();
@@ -796,9 +821,10 @@ export function App() {
       }));
       if (cancelled) return;
       const liveRows = rows.filter((row) => row.feed === "live");
+      const scheduledRows = rows.filter((row) => row.feed === "scheduled");
       setMarketRows(rows);
-      setMarketStatus(liveRows.length ? "live" : "fallback");
-      setMarketUpdatedAt(liveRows[0]?.updatedAt ?? Date.now());
+      setMarketStatus(liveRows.length ? "live" : scheduledRows.length ? "scheduled" : "fallback");
+      setMarketUpdatedAt(liveRows[0]?.updatedAt ?? scheduledRows[0]?.updatedAt ?? Date.now());
     }
     loadMarketRows();
     const refreshTimer = window.setInterval(loadMarketRows, 60_000);
@@ -876,7 +902,7 @@ export function App() {
   }
 
   const activeViewLabel = activeNav === "watchlist" ? `${copy.watchlist} // 12 ${language === "ko" ? "확신" : "CONVICTIONS"}` : activeNav === "atlas" ? `${copy.company} // ${language === "ko" ? "전체 국가" : "ALL COUNTRIES"}` : activeNav === "screener" ? `${copy.screener} // ${language === "ko" ? "필터링된 시그널" : "FILTERED SIGNALS"}` : `${copy.company} // ${language === "ko" ? "전체 국가" : "ALL COUNTRIES"}`;
-  const marketFeedLabel = marketStatus === "live" ? copy.feedLive : marketStatus === "loading" ? copy.feedUpdating : copy.feedSnapshot;
+  const marketFeedLabel = marketStatus === "live" ? copy.feedLive : marketStatus === "scheduled" ? copy.feedScheduled : marketStatus === "loading" ? copy.feedUpdating : copy.feedSnapshot;
   const newsFeedLabel = newsStatus === "live" ? copy.live : newsStatus === "loading" ? copy.feedUpdating : copy.fallback;
   const marketAsOf = marketUpdatedAt ? new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" }).format(new Date(marketUpdatedAt)).toUpperCase() : "—";
 
@@ -1133,7 +1159,7 @@ export function App() {
         </div>
         <div className="rail-asof">{copy.asOf} {marketAsOf} KST</div>
         <blockquote>{copy.quote}<cite>— SIGNAL ROOM</cite></blockquote>
-        <div className="rail-footer"><span className={marketStatus === "live" ? "is-live" : ""}><i className="ph ph-broadcast" /> {marketStatus === "live" ? copy.sourceLive : copy.sourceSnapshot}</span><span>ATLAS-INTEL / v1.0</span></div>
+        <div className="rail-footer"><span className={marketStatus === "live" || marketStatus === "scheduled" ? "is-live" : ""}><i className="ph ph-broadcast" /> {marketStatus === "live" || marketStatus === "scheduled" ? (marketStatus === "scheduled" ? copy.feedScheduled : copy.sourceLive) : copy.sourceSnapshot}</span><span>ATLAS-INTEL / v1.0</span></div>
       </aside>
 
       {newsOpen && (
