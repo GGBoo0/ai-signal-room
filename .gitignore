@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .preview-logs/
+.preview-*.log
 design-qa-*.png
 *.tmp

@@ -19,7 +19,7 @@ function makeFallbackNews(source, url, headlines, headlinesKo = []) {
   }));
 }
 
-const companies = [
+export const companies = [
   {
     id: "sensetime",
     name: "SenseTime",
@@ -1123,7 +1123,7 @@ const baseCountryLanes = [
   { name: "United Arab Emirates", mapNames: ["United Arab Emirates"], count: 1, status: "EMERGING", tone: "muted" },
 ];
 
-const marketSignals = [
+export const marketSignals = [
   { symbol: "^IXIC", name: "NASDAQ COMP.", nameKo: "나스닥 종합", ticker: "IXIC", value: "19,842.21", move: "−0.42%", tone: "orange", points: "3,6 11,9 19,7 28,12 37,8 46,11 55,10 64,16 73,14 82,17 91,15" },
   { symbol: "^KS11", name: "KOSPI", nameKo: "코스피", ticker: "KS11", value: "3,186.38", move: "+0.41%", tone: "blue", points: "3,12 11,10 19,13 28,9 37,12 46,8 55,11 64,9 73,7 82,10 91,6" },
   { symbol: "^GSPC", name: "S&P 500", nameKo: "S&P 500", ticker: "SPX", value: "6,411.37", move: "−0.21%", tone: "orange", points: "3,14 11,12 19,15 28,13 37,15 46,12 55,10 64,12 73,9 82,11 91,7" },
@@ -1135,7 +1135,7 @@ const marketSignals = [
   { symbol: "CL=F", name: "WTI CRUDE", nameKo: "WTI 원유", ticker: "CL1!", value: "66.52", move: "−0.46%", tone: "orange", points: "3,12 11,13 19,10 28,12 37,9 46,10 55,12 64,8 73,10 82,11 91,9" },
 ];
 
-const cryptoSignals = [
+export const cryptoSignals = [
   { symbol: "BTCUSDT", name: "BITCOIN / USD", nameKo: "비트코인 / 달러", ticker: "BINANCE · BTCUSDT", value: "—", move: "—", tone: "blue", points: "3,15 11,13 19,14 28,10 37,12 46,8 55,9 64,7 73,8 82,5 91,6", feed: "connecting", tick: 0 },
   { symbol: "ETHUSDT", name: "ETHEREUM / USD", nameKo: "이더리움 / 달러", ticker: "BINANCE · ETHUSDT", value: "—", move: "—", tone: "blue", points: "3,16 11,14 19,15 28,12 37,13 46,10 55,12 64,8 73,9 82,7 91,8", feed: "connecting", tick: 0 },
 ];
@@ -1154,7 +1154,7 @@ const filterOptions = [
   { id: "PRIVATE", label: "PRIVATE" },
 ];
 
-const sectorOptions = [
+export const sectorOptions = [
   { id: "all", label: "ALL SECTORS", labelKo: "전체 섹터" },
   { id: "models", label: "FOUNDATION MODELS", labelKo: "파운데이션 모델" },
   { id: "semis", label: "COMPUTE & CHIPS", labelKo: "컴퓨트·반도체" },
@@ -1299,7 +1299,7 @@ const expandedCompanyProfiles = [
 companies.push(...expandedCompanyProfiles.map(makeRepresentativeCompany));
 
 const baseCountrySignals = Object.fromEntries(baseCountryLanes.map((lane) => [lane.name, lane]));
-const countryLanes = [...new Set(companies.map((company) => company.country))]
+export const countryLanes = [...new Set(companies.map((company) => company.country))]
   .map((name) => {
     const firstCompany = companies.find((company) => company.country === name);
     const savedSignal = baseCountrySignals[name];
@@ -1598,24 +1598,24 @@ function getCopy(language, key) {
   return uiCopy[language]?.[key] ?? uiCopy.en[key] ?? key;
 }
 
-function getCompanyText(company, field, language) {
+export function getCompanyText(company, field, language) {
   if (language !== "ko") return company[field];
   return companyCopyKo[company.id]?.[field] ?? company[`${field}Ko`] ?? company[field];
 }
 
-function getCompanyValue(company, field, language) {
+export function getCompanyValue(company, field, language) {
   return language === "ko" ? company[`${field}Ko`] ?? company[field] : company[field];
 }
 
-function getCountryLabel(country, language) {
+export function getCountryLabel(country, language) {
   return language === "ko" ? countryNamesKo[country] ?? country : country;
 }
 
-function getCityLabel(city, language) {
+export function getCityLabel(city, language) {
   return language === "ko" ? cityNamesKo[city] ?? city : city;
 }
 
-function getStatusLabel(status, language) {
+export function getStatusLabel(status, language) {
   const labels = {
     PUBLIC: getCopy(language, "public"),
     PRIVATE: getCopy(language, "private"),
@@ -1634,12 +1634,12 @@ function getFilterLabel(filterId, language) {
   return filterId === "PUBLIC" ? getCopy(language, "public") : getCopy(language, "private");
 }
 
-function getSectorLabel(sectorId, language) {
+export function getSectorLabel(sectorId, language) {
   const option = sectorOptions.find((sector) => sector.id === sectorId);
   return language === "ko" ? option?.labelKo ?? sectorId : option?.label ?? sectorId;
 }
 
-function getNewsHeadline(news, company, index, language) {
+export function getNewsHeadline(news, company, index, language) {
   if (news.isLive || language !== "ko") return news.headline;
   return newsHeadlineKo[company.id]?.[index] ?? news.headlineKo ?? news.headline;
 }
