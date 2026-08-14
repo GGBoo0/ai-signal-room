@@ -1,7 +1,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap");
 
+@font-face {
+  font-family: "Gyeonggi Cheonnyeon";
+  src: url("./assets/fonts/GyeonggiCheonnyeonTitle-Medium.ttf") format("truetype");
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gyeonggi Cheonnyeon";
+  src: url("./assets/fonts/GyeonggiCheonnyeonTitle-Bold.ttf") format("truetype");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: "Manrope", "Noto Sans KR", Arial, sans-serif;
+  font-family: "Gyeonggi Cheonnyeon", "Manrope", "Noto Sans KR", Arial, sans-serif;
   color: #1f1d1a;
   background: #f3eee3;
   font-synthesis: none;
@@ -16,7 +32,7 @@
   --orange: #ed6d2b;
   --blue: #165bc5;
   --muted: #a69c90;
-  --display: "Cormorant Garamond", "Noto Serif KR", Georgia, serif;
+  --display: "Gyeonggi Cheonnyeon", "Noto Sans KR", "Manrope", Arial, sans-serif;
   --mono: "DM Mono", "Courier New", monospace;
 }
 
@@ -133,8 +149,8 @@ input:focus-visible {
   font-family: var(--display);
   font-size: clamp(62px, 4.8vw, 78px);
   font-weight: 600;
-  letter-spacing: -0.07em;
-  line-height: 0.72;
+  letter-spacing: -0.04em;
+  line-height: 0.78;
   text-transform: uppercase;
 }
 
@@ -467,8 +483,8 @@ input:focus-visible {
   font-family: var(--display);
   font-size: clamp(43px, 4.1vw, 62px);
   font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 0.85;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
 }
 
 .title-line p {
@@ -972,7 +988,7 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.08em;
+  letter-spacing: -0.03em;
 }
 
 .company-stamp.stamp-blue {
@@ -998,8 +1014,8 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 33px;
   font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 0.85;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
 }
 
 .sheet-subline {
@@ -1431,7 +1447,7 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 25px;
   font-weight: 600;
-  line-height: 0.98;
+  line-height: 1.12;
 }
 
 .signal-rail blockquote::before {
@@ -1511,8 +1527,8 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 44px;
   font-weight: 600;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
 }
 
 .modal-header > button {
@@ -1572,7 +1588,7 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 22px;
   font-weight: 600;
-  line-height: 0.98;
+  line-height: 1.1;
 }
 
 .modal-news-row > i {
@@ -1593,7 +1609,7 @@ input:focus-visible {
   font-family: var(--display);
   font-size: 26px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.15;
 }
 
 .briefing-grid {
