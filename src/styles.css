@@ -64,7 +64,7 @@ input:focus-visible {
   grid-template-columns: 265px minmax(680px, 1fr) 238px;
   overflow: hidden;
   background-color: var(--paper);
-  background-image: url("/paper-texture.png");
+  background-image: var(--paper-texture, url("/paper-texture.png"));
   background-size: cover;
   background-position: center;
 }

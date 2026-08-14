@@ -608,6 +608,12 @@ const newsHeadlineKo = {
   g42: ["G42, 주권형 워크로드를 위한 지역 컴퓨트 회랑 구상", "중동 데이터센터 투자가 기술 스택 상단으로 계속 이동"],
 };
 
+const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN ?? "").replace(/\/$/, "");
+
+function apiUrl(path) {
+  return `${API_ORIGIN}${path}`;
+}
+
 function getCopy(language, key) {
   return uiCopy[language]?.[key] ?? uiCopy.en[key] ?? key;
 }
@@ -689,7 +695,7 @@ function formatYahooMove(signal, currentValue, previousValue) {
 }
 
 async function fetchYahooMarket(signal) {
-  const response = await fetch(`/api/market/${encodeURIComponent(signal.symbol)}?range=1d&interval=5m&includePrePost=false`, { headers: { accept: "application/json" } });
+  const response = await fetch(apiUrl(`/api/market/${encodeURIComponent(signal.symbol)}?range=1d&interval=5m&includePrePost=false`), { headers: { accept: "application/json" } });
   if (!response.ok) throw new Error(`Market feed failed: ${response.status}`);
   const payload = await response.json();
   const result = payload.chart?.result?.[0];
@@ -710,7 +716,7 @@ async function fetchYahooMarket(signal) {
 
 async function fetchGdeltNews(company, language) {
   const query = encodeURIComponent(`${company.name} AI`);
-  const endpoint = `/api/news?query=${query}&mode=artlist&format=json&maxrecords=5&sort=datedesc&timespan=1week`;
+  const endpoint = apiUrl(`/api/news?query=${query}&mode=artlist&format=json&maxrecords=5&sort=datedesc&timespan=1week`);
   const controller = new AbortController();
   const timeoutId = globalThis.setTimeout(() => controller.abort(), 8_000);
   let response;
@@ -875,7 +881,7 @@ export function App() {
   const marketAsOf = marketUpdatedAt ? new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" }).format(new Date(marketUpdatedAt)).toUpperCase() : "—";
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" style={{ "--paper-texture": `url(${import.meta.env.BASE_URL}paper-texture.png)` }}>
       <aside className="brand-column">
         <div className="brand-lockup">
           <span className="eyebrow orange-text">{copy.eyebrow}</span>
@@ -1057,7 +1063,7 @@ export function App() {
             <div className="sheet-tab">{copy.selected}<br />{copy.company}</div>
             <div className="sheet-main">
               <div className="sheet-heading">
-                <div className={`company-stamp stamp-${selectedCompany.signalTone}`} aria-hidden="true"><img src="/company-mark.png" alt="" /></div>
+                <div className={`company-stamp stamp-${selectedCompany.signalTone}`} aria-hidden="true"><img src={`${import.meta.env.BASE_URL}company-mark.png`} alt="" /></div>
                 <div>
                   <div className="sheet-kicker">{getCompanyText(selectedCompany, "category", language).toUpperCase()}</div>
                   <h3>{selectedCompany.name}</h3>
