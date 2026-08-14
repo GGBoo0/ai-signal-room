@@ -1106,7 +1106,7 @@ const companies = [
   },
 ];
 
-const countryLanes = [
+const baseCountryLanes = [
   { name: "United States", mapNames: ["United States of America"], count: 7, status: "HIGH SIGNAL", tone: "orange" },
   { name: "China", mapNames: ["China"], count: 3, status: "HIGH SIGNAL", tone: "orange" },
   { name: "United Kingdom", mapNames: ["United Kingdom"], count: 3, status: "WATCH", tone: "blue" },
@@ -1135,6 +1135,11 @@ const marketSignals = [
   { symbol: "CL=F", name: "WTI CRUDE", nameKo: "WTI 원유", ticker: "CL1!", value: "66.52", move: "−0.46%", tone: "orange", points: "3,12 11,13 19,10 28,12 37,9 46,10 55,12 64,8 73,10 82,11 91,9" },
 ];
 
+const cryptoSignals = [
+  { symbol: "BTCUSDT", name: "BITCOIN / USD", nameKo: "비트코인 / 달러", ticker: "BINANCE · BTCUSDT", value: "—", move: "—", tone: "blue", points: "3,15 11,13 19,14 28,10 37,12 46,8 55,9 64,7 73,8 82,5 91,6", feed: "connecting", tick: 0 },
+  { symbol: "ETHUSDT", name: "ETHEREUM / USD", nameKo: "이더리움 / 달러", ticker: "BINANCE · ETHUSDT", value: "—", move: "—", tone: "blue", points: "3,16 11,14 19,15 28,12 37,13 46,10 55,12 64,8 73,9 82,7 91,8", feed: "connecting", tick: 0 },
+];
+
 const navItems = [
   { id: "atlas", label: "ATLAS", icon: "ph-compass" },
   { id: "watchlist", label: "WATCHLIST", icon: "ph-star" },
@@ -1151,13 +1156,163 @@ const filterOptions = [
 
 const sectorOptions = [
   { id: "all", label: "ALL SECTORS", labelKo: "전체 섹터" },
-  { id: "models", label: "MODELS & DATA", labelKo: "모델·데이터" },
+  { id: "models", label: "FOUNDATION MODELS", labelKo: "파운데이션 모델" },
   { id: "semis", label: "COMPUTE & CHIPS", labelKo: "컴퓨트·반도체" },
   { id: "cloud", label: "CLOUD & PLATFORMS", labelKo: "클라우드·플랫폼" },
   { id: "applied", label: "ENTERPRISE & APPLIED", labelKo: "엔터프라이즈·응용" },
   { id: "robotics", label: "VISION, ROBOTS & AUTO", labelKo: "비전·로봇·자율주행" },
   { id: "biotech", label: "AI LIFE SCIENCE", labelKo: "AI 바이오·헬스케어" },
+  { id: "data", label: "DATA & MLOPS", labelKo: "데이터·MLOps" },
+  { id: "cyber", label: "AI CYBERSECURITY", labelKo: "AI 사이버보안" },
+  { id: "energy", label: "POWER & DATA CENTERS", labelKo: "전력·데이터센터" },
+  { id: "industrial", label: "INDUSTRIAL AI & TWINS", labelKo: "산업 AI·디지털 트윈" },
+  { id: "defense", label: "DEFENSE & GEOSPATIAL", labelKo: "방산·지리공간 AI" },
+  { id: "consumer", label: "CONSUMER & DEVICES", labelKo: "소비자·디바이스 AI" },
+  { id: "fintech", label: "FINANCE & INSURANCE", labelKo: "금융·보험 AI" },
 ];
+
+const countryMapNames = {
+  "United States": ["United States of America"],
+  "United Kingdom": ["United Kingdom"],
+  "South Korea": ["South Korea"],
+  "United Arab Emirates": ["United Arab Emirates"],
+};
+
+const companyChartPatterns = [
+  [4, 6, 5, 8, 9, 11, 10, 13, 14, 16, 15, 18, 21],
+  [7, 8, 10, 9, 12, 11, 14, 16, 15, 18, 20, 19, 23],
+  [3, 5, 7, 6, 9, 12, 11, 14, 13, 17, 19, 21, 24],
+  [8, 7, 9, 11, 10, 13, 12, 15, 17, 16, 19, 21, 22],
+];
+
+function makeRepresentativeCompany(profile, index) {
+  const sector = sectorOptions.find((option) => option.id === profile.sector) ?? sectorOptions[4];
+  const isPublic = profile.status === "PUBLIC";
+  const signalLabels = ["WATCH", "HIGH SIGNAL", "ACCELERATING", "STEADY"];
+  return {
+    id: profile.id,
+    name: profile.name,
+    country: profile.country,
+    city: profile.city,
+    mapNames: profile.mapNames ?? countryMapNames[profile.country] ?? [profile.country],
+    coordinates: profile.coordinates,
+    sector: profile.sector,
+    category: profile.category ?? sector.label,
+    categoryKo: profile.categoryKo ?? sector.labelKo,
+    role: profile.focus,
+    roleKo: profile.focusKo,
+    status: profile.status,
+    ticker: profile.ticker,
+    founded: profile.founded,
+    employees: isPublic ? "See latest filing" : "Undisclosed",
+    employeesKo: isPublic ? "최근 공시 참고" : "비공개",
+    funding: isPublic ? "Public market" : "Private capital",
+    fundingKo: isPublic ? "상장시장" : "비상장 자본",
+    valuation: isPublic ? "Public market" : "Private",
+    valuationKo: isPublic ? "상장시장" : "비공개",
+    latestRound: isPublic ? "Public market" : "Private capital",
+    latestRoundKo: isPublic ? "상장시장" : "비상장 투자",
+    signal: profile.signal ?? `+${10 + (index % 15)}%`,
+    signalLabel: profile.signalLabel ?? signalLabels[index % signalLabels.length],
+    signalTone: profile.signalTone ?? (index % 2 === 0 ? "orange" : "blue"),
+    thesis: profile.thesis ?? `${profile.name} represents the ${sector.label.toLowerCase()} layer through ${profile.focus.toLowerCase()}.`,
+    thesisKo: profile.thesisKo ?? `${profile.name}: ${profile.focusKo}를 중심으로 AI 밸류체인의 ${sector.labelKo} 영역을 대표합니다.`,
+    watchlist: profile.watchlist ?? index % 6 === 0,
+    showLabel: profile.showLabel ?? index % 9 === 0,
+    markerLabel: profile.markerLabel ?? profile.city.toUpperCase(),
+    chart: companyChartPatterns[index % companyChartPatterns.length].map((value) => value + (index % 4)),
+    news: makeFallbackNews("OFFICIAL", profile.newsUrl, [
+      `${profile.name} official newsroom: latest AI and technology updates`,
+      `${profile.name} product and strategy updates for the ${sector.label.toLowerCase()} layer`,
+    ], [
+      `${profile.name} 공식 뉴스룸: 최신 AI·기술 업데이트`,
+      `${profile.name} ${sector.labelKo} 분야 제품·전략 업데이트`,
+    ]),
+  };
+}
+
+const expandedCompanyProfiles = [
+  { id: "anthropic", name: "Anthropic", country: "United States", city: "San Francisco", coordinates: [-122.4194, 37.7749], sector: "models", status: "PRIVATE", ticker: "PRIVATE", founded: "2021", focus: "Frontier models + AI safety", focusKo: "프런티어 모델·AI 안전", newsUrl: "https://www.anthropic.com/news", watchlist: true, showLabel: true },
+  { id: "cohere", name: "Cohere", country: "Canada", city: "Toronto", coordinates: [-79.3832, 43.6532], sector: "models", status: "PRIVATE", ticker: "PRIVATE", founded: "2019", focus: "Enterprise language models", focusKo: "기업용 언어 모델", newsUrl: "https://cohere.com/blog" },
+  { id: "huggingface", name: "Hugging Face", country: "United States", city: "New York", coordinates: [-74.006, 40.7128], sector: "models", status: "PRIVATE", ticker: "PRIVATE", founded: "2016", focus: "Open model ecosystem", focusKo: "오픈 모델 생태계", newsUrl: "https://huggingface.co/blog" },
+  { id: "meta", name: "Meta Platforms", country: "United States", city: "Menlo Park", coordinates: [-122.1817, 37.453], sector: "models", status: "PUBLIC", ticker: "NASDAQ: META", founded: "2004", focus: "Open models + AI distribution", focusKo: "오픈 모델·AI 유통", newsUrl: "https://ai.meta.com/blog/", watchlist: true },
+
+  { id: "databricks", name: "Databricks", country: "United States", city: "San Francisco", coordinates: [-122.4094, 37.7849], sector: "data", status: "PRIVATE", ticker: "PRIVATE", founded: "2013", focus: "Lakehouse + enterprise AI", focusKo: "레이크하우스·기업 AI", newsUrl: "https://www.databricks.com/blog", watchlist: true, showLabel: true },
+  { id: "snowflake", name: "Snowflake", country: "United States", city: "Bozeman", coordinates: [-111.0429, 45.677], sector: "data", status: "PUBLIC", ticker: "NYSE: SNOW", founded: "2012", focus: "Cloud data + AI platform", focusKo: "클라우드 데이터·AI 플랫폼", newsUrl: "https://www.snowflake.com/en/blog/" },
+  { id: "scaleai", name: "Scale AI", country: "United States", city: "San Francisco", coordinates: [-122.4294, 37.7649], sector: "data", status: "PRIVATE", ticker: "PRIVATE", founded: "2016", focus: "Training data + evaluation", focusKo: "학습 데이터·모델 평가", newsUrl: "https://scale.com/blog" },
+  { id: "appen", name: "Appen", country: "Australia", city: "Sydney", coordinates: [151.2093, -33.8688], sector: "data", status: "PUBLIC", ticker: "ASX: APX", founded: "1996", focus: "Human data + model quality", focusKo: "휴먼 데이터·모델 품질", newsUrl: "https://www.appen.com/blog/", showLabel: true },
+  { id: "elastic", name: "Elastic", country: "United States", city: "Mountain View", coordinates: [-122.0838, 37.3861], sector: "data", status: "PUBLIC", ticker: "NYSE: ESTC", founded: "2012", focus: "Search + vector retrieval", focusKo: "검색·벡터 검색", newsUrl: "https://www.elastic.co/blog/" },
+  { id: "datadog", name: "Datadog", country: "United States", city: "New York", coordinates: [-73.996, 40.7228], sector: "data", status: "PUBLIC", ticker: "NASDAQ: DDOG", founded: "2010", focus: "AI observability + operations", focusKo: "AI 관측성·운영", newsUrl: "https://www.datadoghq.com/blog/" },
+
+  { id: "amazon", name: "Amazon", country: "United States", city: "Seattle", coordinates: [-122.3321, 47.6062], sector: "cloud", status: "PUBLIC", ticker: "NASDAQ: AMZN", founded: "1994", focus: "AI cloud + custom silicon", focusKo: "AI 클라우드·커스텀 실리콘", newsUrl: "https://aws.amazon.com/blogs/machine-learning/", watchlist: true, showLabel: true },
+  { id: "alphabet", name: "Alphabet", country: "United States", city: "Mountain View", coordinates: [-122.0738, 37.3961], sector: "cloud", status: "PUBLIC", ticker: "NASDAQ: GOOGL", founded: "2015", focus: "Models + cloud + distribution", focusKo: "모델·클라우드·유통", newsUrl: "https://blog.google/technology/ai/", watchlist: true },
+  { id: "oracle", name: "Oracle", country: "United States", city: "Austin", coordinates: [-97.7331, 30.2772], sector: "cloud", status: "PUBLIC", ticker: "NYSE: ORCL", founded: "1977", focus: "AI database + cloud capacity", focusKo: "AI 데이터베이스·클라우드 용량", newsUrl: "https://www.oracle.com/news/" },
+  { id: "tencent", name: "Tencent", country: "China", city: "Shenzhen", coordinates: [114.0579, 22.5431], sector: "cloud", status: "PUBLIC", ticker: "HKEX: 0700", founded: "1998", focus: "Cloud + consumer AI", focusKo: "클라우드·소비자 AI", newsUrl: "https://www.tencent.com/en-us/articles.html", showLabel: true },
+  { id: "ibm", name: "IBM", country: "United States", city: "Armonk", coordinates: [-73.714, 41.126], sector: "cloud", status: "PUBLIC", ticker: "NYSE: IBM", founded: "1911", focus: "Hybrid cloud + governed AI", focusKo: "하이브리드 클라우드·AI 거버넌스", newsUrl: "https://www.ibm.com/think/ai" },
+
+  { id: "salesforce", name: "Salesforce", country: "United States", city: "San Francisco", coordinates: [-122.3994, 37.7749], sector: "applied", status: "PUBLIC", ticker: "NYSE: CRM", founded: "1999", focus: "Enterprise agents + CRM", focusKo: "기업용 에이전트·CRM", newsUrl: "https://www.salesforce.com/news/" },
+  { id: "servicenow", name: "ServiceNow", country: "United States", city: "Santa Clara", coordinates: [-121.945, 37.3541], sector: "applied", status: "PUBLIC", ticker: "NYSE: NOW", founded: "2004", focus: "Workflow agents + automation", focusKo: "워크플로 에이전트·자동화", newsUrl: "https://www.servicenow.com/company/media/press-room.html" },
+  { id: "sap", name: "SAP", country: "Germany", city: "Walldorf", coordinates: [8.642, 49.306], sector: "applied", status: "PUBLIC", ticker: "XETRA: SAP", founded: "1972", focus: "Business AI + ERP data", focusKo: "비즈니스 AI·ERP 데이터", newsUrl: "https://news.sap.com/", showLabel: true },
+
+  { id: "crowdstrike", name: "CrowdStrike", country: "United States", city: "Austin", coordinates: [-97.7531, 30.2572], sector: "cyber", status: "PUBLIC", ticker: "NASDAQ: CRWD", founded: "2011", focus: "AI endpoint security", focusKo: "AI 엔드포인트 보안", newsUrl: "https://www.crowdstrike.com/en-us/blog/", watchlist: true },
+  { id: "paloalto", name: "Palo Alto Networks", country: "United States", city: "Santa Clara", coordinates: [-121.925, 37.3641], sector: "cyber", status: "PUBLIC", ticker: "NASDAQ: PANW", founded: "2005", focus: "AI security operations", focusKo: "AI 보안 운영", newsUrl: "https://www.paloaltonetworks.com/blog/" },
+  { id: "sentinelone", name: "SentinelOne", country: "United States", city: "Mountain View", coordinates: [-122.0938, 37.3761], sector: "cyber", status: "PUBLIC", ticker: "NYSE: S", founded: "2013", focus: "Autonomous threat defense", focusKo: "자율형 위협 방어", newsUrl: "https://www.sentinelone.com/blog/" },
+  { id: "darktrace", name: "Darktrace", country: "United Kingdom", city: "Cambridge", coordinates: [0.1318, 52.2153], sector: "cyber", status: "PRIVATE", ticker: "PRIVATE", founded: "2013", focus: "AI network defense", focusKo: "AI 네트워크 방어", newsUrl: "https://www.darktrace.com/resources/newsroom", showLabel: true },
+
+  { id: "vertiv", name: "Vertiv", country: "United States", city: "Westerville", coordinates: [-82.929, 40.126], sector: "energy", status: "PUBLIC", ticker: "NYSE: VRT", founded: "2016", focus: "Data-center power + cooling", focusKo: "데이터센터 전력·냉각", newsUrl: "https://www.vertiv.com/en-us/about/news-and-insights/", watchlist: true },
+  { id: "equinix", name: "Equinix", country: "United States", city: "Redwood City", coordinates: [-122.2364, 37.4852], sector: "energy", status: "PUBLIC", ticker: "NASDAQ: EQIX", founded: "1998", focus: "Interconnection + AI capacity", focusKo: "인터커넥션·AI 용량", newsUrl: "https://newsroom.equinix.com/" },
+  { id: "digitalrealty", name: "Digital Realty", country: "United States", city: "Austin", coordinates: [-97.7431, 30.2672], sector: "energy", status: "PUBLIC", ticker: "NYSE: DLR", founded: "2004", focus: "Global data-center platform", focusKo: "글로벌 데이터센터 플랫폼", newsUrl: "https://www.digitalrealty.com/about/newsroom" },
+  { id: "schneider", name: "Schneider Electric", country: "France", city: "Rueil-Malmaison", coordinates: [2.188, 48.877], sector: "energy", status: "PUBLIC", ticker: "EPA: SU", founded: "1836", focus: "Power management + data centers", focusKo: "전력 관리·데이터센터", newsUrl: "https://www.se.com/ww/en/about-us/newsroom/", showLabel: true },
+  { id: "eaton", name: "Eaton", country: "Ireland", city: "Dublin", coordinates: [-6.2603, 53.3498], sector: "energy", status: "PUBLIC", ticker: "NYSE: ETN", founded: "1911", focus: "Grid equipment + AI power", focusKo: "전력망 장비·AI 전력", newsUrl: "https://www.eaton.com/us/en-us/company/news-insights.html" },
+
+  { id: "siemens", name: "Siemens", country: "Germany", city: "Munich", coordinates: [11.582, 48.135], sector: "industrial", status: "PUBLIC", ticker: "XETRA: SIE", founded: "1847", focus: "Industrial AI + digital twins", focusKo: "산업 AI·디지털 트윈", newsUrl: "https://press.siemens.com/global/en", watchlist: true, showLabel: true },
+  { id: "rockwell", name: "Rockwell Automation", country: "United States", city: "Milwaukee", coordinates: [-87.9065, 43.0389], sector: "industrial", status: "PUBLIC", ticker: "NYSE: ROK", founded: "1903", focus: "Factory automation + analytics", focusKo: "공장 자동화·분석", newsUrl: "https://www.rockwellautomation.com/en-us/company/news.html" },
+  { id: "honeywell", name: "Honeywell", country: "United States", city: "Charlotte", coordinates: [-80.8431, 35.2271], sector: "industrial", status: "PUBLIC", ticker: "NASDAQ: HON", founded: "1906", focus: "Industrial autonomy + controls", focusKo: "산업 자율화·제어", newsUrl: "https://www.honeywell.com/us/en/news" },
+  { id: "dassault", name: "Dassault Systèmes", country: "France", city: "Vélizy-Villacoublay", coordinates: [2.189, 48.783], sector: "industrial", status: "PUBLIC", ticker: "EPA: DSY", founded: "1981", focus: "Simulation + virtual twins", focusKo: "시뮬레이션·버추얼 트윈", newsUrl: "https://www.3ds.com/newsroom" },
+
+  { id: "anduril", name: "Anduril", country: "United States", city: "Costa Mesa", coordinates: [-117.9187, 33.6411], sector: "defense", status: "PRIVATE", ticker: "PRIVATE", founded: "2017", focus: "Autonomous defense systems", focusKo: "자율형 방산 시스템", newsUrl: "https://www.anduril.com/news/", watchlist: true, showLabel: true },
+  { id: "shieldai", name: "Shield AI", country: "United States", city: "San Diego", coordinates: [-117.1611, 32.7157], sector: "defense", status: "PRIVATE", ticker: "PRIVATE", founded: "2015", focus: "Autonomous aircraft AI", focusKo: "자율 항공기 AI", newsUrl: "https://shield.ai/news/" },
+  { id: "helsing", name: "Helsing", country: "Germany", city: "Munich", coordinates: [11.592, 48.145], sector: "defense", status: "PRIVATE", ticker: "PRIVATE", founded: "2021", focus: "European defense AI", focusKo: "유럽 방산 AI", newsUrl: "https://helsing.ai/newsroom" },
+  { id: "planet", name: "Planet Labs", country: "United States", city: "San Francisco", coordinates: [-122.4394, 37.7849], sector: "defense", status: "PUBLIC", ticker: "NYSE: PL", founded: "2010", focus: "Geospatial AI + satellites", focusKo: "지리공간 AI·위성", newsUrl: "https://www.planet.com/pulse/" },
+
+  { id: "apple", name: "Apple", country: "United States", city: "Cupertino", coordinates: [-122.0322, 37.323], sector: "consumer", status: "PUBLIC", ticker: "NASDAQ: AAPL", founded: "1976", focus: "On-device AI + distribution", focusKo: "온디바이스 AI·유통", newsUrl: "https://www.apple.com/newsroom/", watchlist: true, showLabel: true },
+  { id: "sony", name: "Sony Group", country: "Japan", city: "Tokyo", coordinates: [139.6817, 35.6895], sector: "consumer", status: "PUBLIC", ticker: "TSE: 6758", founded: "1946", focus: "Sensors + entertainment AI", focusKo: "센서·엔터테인먼트 AI", newsUrl: "https://www.sony.com/en/SonyInfo/News/Press/" },
+  { id: "xiaomi", name: "Xiaomi", country: "China", city: "Beijing", coordinates: [116.4074, 39.9042], sector: "consumer", status: "PUBLIC", ticker: "HKEX: 1810", founded: "2010", focus: "Devices + edge AI", focusKo: "디바이스·엣지 AI", newsUrl: "https://www.mi.com/global/event/" },
+  { id: "grab", name: "Grab", country: "Singapore", city: "Singapore", coordinates: [103.8198, 1.3521], sector: "consumer", status: "PUBLIC", ticker: "NASDAQ: GRAB", founded: "2012", focus: "Mobility + local AI", focusKo: "모빌리티·지역 AI", newsUrl: "https://www.grab.com/sg/press/", showLabel: true },
+
+  { id: "upstart", name: "Upstart", country: "United States", city: "San Mateo", coordinates: [-122.3255, 37.563], sector: "fintech", status: "PUBLIC", ticker: "NASDAQ: UPST", founded: "2012", focus: "AI lending decisions", focusKo: "AI 대출 심사", newsUrl: "https://ir.upstart.com/news-releases" },
+  { id: "nubank", name: "Nubank", country: "Brazil", city: "São Paulo", coordinates: [-46.6333, -23.5505], sector: "fintech", status: "PUBLIC", ticker: "NYSE: NU", founded: "2013", focus: "AI-native digital banking", focusKo: "AI 기반 디지털 뱅킹", newsUrl: "https://international.nubank.com.br/company/", showLabel: true },
+  { id: "lemonade", name: "Lemonade", country: "United States", city: "New York", coordinates: [-74.016, 40.7028], sector: "fintech", status: "PUBLIC", ticker: "NYSE: LMND", founded: "2015", focus: "AI insurance operations", focusKo: "AI 보험 운영", newsUrl: "https://www.lemonade.com/blog/" },
+
+  { id: "symbotic", name: "Symbotic", country: "United States", city: "Wilmington", coordinates: [-71.1737, 42.5465], sector: "robotics", status: "PUBLIC", ticker: "NASDAQ: SYM", founded: "2006", focus: "Warehouse robotics + AI", focusKo: "물류창고 로봇·AI", newsUrl: "https://www.symbotic.com/newsroom/", watchlist: true },
+  { id: "doosanrobotics", name: "Doosan Robotics", country: "South Korea", city: "Suwon", coordinates: [127.018, 37.2636], sector: "robotics", status: "PUBLIC", ticker: "KRX: 454910", founded: "2015", focus: "Collaborative robots", focusKo: "협동로봇", newsUrl: "https://www.doosanrobotics.com/en/news/", showLabel: true },
+
+  { id: "tempus", name: "Tempus AI", country: "United States", city: "Chicago", coordinates: [-87.6298, 41.8781], sector: "biotech", status: "PUBLIC", ticker: "NASDAQ: TEM", founded: "2015", focus: "Clinical data + precision medicine", focusKo: "임상 데이터·정밀의료", newsUrl: "https://ir.tempus.com/news-releases", watchlist: true, showLabel: true },
+  { id: "schrodinger", name: "Schrödinger", country: "United States", city: "New York", coordinates: [-73.986, 40.7328], sector: "biotech", status: "PUBLIC", ticker: "NASDAQ: SDGR", founded: "1990", focus: "Molecular simulation + drug AI", focusKo: "분자 시뮬레이션·신약 AI", newsUrl: "https://ir.schrodinger.com/news-releases" },
+  { id: "abcellera", name: "AbCellera", country: "Canada", city: "Vancouver", coordinates: [-123.1207, 49.2827], sector: "biotech", status: "PUBLIC", ticker: "NASDAQ: ABCL", founded: "2012", focus: "Antibody discovery platform", focusKo: "항체 발굴 플랫폼", newsUrl: "https://www.abcellera.com/news" },
+
+  { id: "broadcom", name: "Broadcom", country: "United States", city: "Palo Alto", coordinates: [-122.143, 37.4419], sector: "semis", status: "PUBLIC", ticker: "NASDAQ: AVGO", founded: "1961", focus: "AI networking + accelerators", focusKo: "AI 네트워킹·가속기", newsUrl: "https://www.broadcom.com/company/news", watchlist: true, showLabel: true },
+  { id: "micron", name: "Micron Technology", country: "United States", city: "Boise", coordinates: [-116.2023, 43.615], sector: "semis", status: "PUBLIC", ticker: "NASDAQ: MU", founded: "1978", focus: "AI memory + storage", focusKo: "AI 메모리·스토리지", newsUrl: "https://investors.micron.com/news-releases" },
+  { id: "qualcomm", name: "Qualcomm", country: "United States", city: "San Diego", coordinates: [-117.1711, 32.7257], sector: "semis", status: "PUBLIC", ticker: "NASDAQ: QCOM", founded: "1985", focus: "Edge AI compute", focusKo: "엣지 AI 컴퓨트", newsUrl: "https://www.qualcomm.com/news/releases" },
+];
+
+companies.push(...expandedCompanyProfiles.map(makeRepresentativeCompany));
+
+const baseCountrySignals = Object.fromEntries(baseCountryLanes.map((lane) => [lane.name, lane]));
+const countryLanes = [...new Set(companies.map((company) => company.country))]
+  .map((name) => {
+    const firstCompany = companies.find((company) => company.country === name);
+    const savedSignal = baseCountrySignals[name];
+    const count = companies.filter((company) => company.country === name).length;
+    return {
+      name,
+      mapNames: savedSignal?.mapNames ?? firstCompany?.mapNames ?? countryMapNames[name] ?? [name],
+      count,
+      status: savedSignal?.status ?? (count >= 3 ? "HIGH SIGNAL" : count === 2 ? "WATCH" : "EMERGING"),
+      tone: savedSignal?.tone ?? (count >= 3 ? "orange" : count === 2 ? "blue" : "muted"),
+    };
+  })
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
 const uiCopy = {
   en: {
@@ -1182,7 +1337,7 @@ const uiCopy = {
     dataMethod: "DATA METHOD",
     researchMode: "SNAPSHOT / RESEARCH MODE",
     title: "THE GLOBAL AI MAP",
-    subtitle: "AI COMPANIES ACROSS THE STACK · 6 SECTORS",
+    subtitle: "AI COMPANIES ACROSS THE FULL TECHNOLOGY STACK",
     find: "FIND A COMPANY",
     placeholder: "Search name, city, sector",
     inspect: "Click a country or company to inspect the signal.",
@@ -1235,6 +1390,12 @@ const uiCopy = {
     delayed: "DELAYED",
     fallback: "SNAPSHOT",
     refresh: "REFRESH",
+    auto: "AUTO",
+    connecting: "CONNECTING",
+    reconnecting: "RECONNECTING",
+    autoFeed: "AUTO · CRYPTO 1S / MARKETS 30S",
+    autoFeedScheduled: "AUTO · CRYPTO 1S / INDEX SNAPSHOT",
+    cryptoStream: "BINANCE PUBLIC STREAM",
     kor: "KOR",
     eng: "ENG",
   },
@@ -1260,7 +1421,7 @@ const uiCopy = {
     dataMethod: "데이터 방법론",
     researchMode: "스냅샷 / 리서치 모드",
     title: "글로벌 AI 지도",
-    subtitle: "AI 산업 전반의 기업 · 인프라 · 응용",
+    subtitle: "AI 산업 전체 기술 스택의 대표 기업",
     find: "기업 찾기",
     placeholder: "이름, 도시, 섹터 검색",
     inspect: "국가 또는 기업을 클릭해 시그널을 확인하세요.",
@@ -1313,6 +1474,12 @@ const uiCopy = {
     delayed: "지연",
     fallback: "스냅샷",
     refresh: "새로고침",
+    auto: "자동",
+    connecting: "연결 중",
+    reconnecting: "재연결 중",
+    autoFeed: "자동 · 코인 1초 / 시장 30초",
+    autoFeedScheduled: "자동 · 코인 1초 / 지수 스냅샷",
+    cryptoStream: "BINANCE 공개 스트림",
     kor: "KOR",
     eng: "ENG",
   },
@@ -1333,6 +1500,10 @@ const countryNamesKo = {
   Israel: "이스라엘",
   Switzerland: "스위스",
   Singapore: "싱가포르",
+  Canada: "캐나다",
+  Australia: "호주",
+  Ireland: "아일랜드",
+  Brazil: "브라질",
   "Hong Kong": "홍콩",
   "United Arab Emirates": "아랍에미리트",
 };
@@ -1362,6 +1533,36 @@ const cityNamesKo = {
   Cologne: "쾰른",
   Zurich: "취리히",
   "Abu Dhabi": "아부다비",
+  Toronto: "토론토",
+  "New York": "뉴욕",
+  "Menlo Park": "멘로파크",
+  Bozeman: "보즈먼",
+  Sydney: "시드니",
+  "Mountain View": "마운틴뷰",
+  Seattle: "시애틀",
+  Shenzhen: "선전",
+  Armonk: "아몽크",
+  Walldorf: "발도르프",
+  Westerville: "웨스터빌",
+  "Redwood City": "레드우드시티",
+  "Rueil-Malmaison": "뤼에유말메종",
+  Dublin: "더블린",
+  Munich: "뮌헨",
+  Milwaukee: "밀워키",
+  Charlotte: "샬럿",
+  "Vélizy-Villacoublay": "벨리지빌라쿠블레",
+  "Costa Mesa": "코스타메사",
+  "San Diego": "샌디에이고",
+  Cupertino: "쿠퍼티노",
+  Beijing: "베이징",
+  Singapore: "싱가포르",
+  "San Mateo": "샌머테이오",
+  "São Paulo": "상파울루",
+  Wilmington: "윌밍턴",
+  Chicago: "시카고",
+  Vancouver: "밴쿠버",
+  "Palo Alto": "팰로앨토",
+  Boise: "보이시",
 };
 
 const companyCopyKo = {
@@ -1388,7 +1589,6 @@ const newsHeadlineKo = {
 
 const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN ?? "").replace(/\/$/, "");
 const IS_STATIC_PAGES = import.meta.env.BASE_URL !== "/" && !API_ORIGIN;
-let marketSnapshotPromise;
 
 function apiUrl(path) {
   return `${API_ORIGIN}${path}`;
@@ -1401,6 +1601,10 @@ function getCopy(language, key) {
 function getCompanyText(company, field, language) {
   if (language !== "ko") return company[field];
   return companyCopyKo[company.id]?.[field] ?? company[`${field}Ko`] ?? company[field];
+}
+
+function getCompanyValue(company, field, language) {
+  return language === "ko" ? company[`${field}Ko`] ?? company[field] : company[field];
 }
 
 function getCountryLabel(country, language) {
@@ -1480,12 +1684,25 @@ function formatYahooMove(signal, currentValue, previousValue) {
   return `${percent >= 0 ? "+" : "−"}${Math.abs(percent).toFixed(2)}%`;
 }
 
-async function fetchStaticMarket(signal) {
-  marketSnapshotPromise ??= fetch(`${import.meta.env.BASE_URL}market.json?cache=${Date.now()}`, { cache: "no-store" }).then((response) => {
-    if (!response.ok) throw new Error(`Market snapshot failed: ${response.status}`);
-    return response.json();
-  });
-  const snapshot = await marketSnapshotPromise;
+function formatCryptoValue(symbol, value) {
+  if (!Number.isFinite(value)) return "—";
+  const maximumFractionDigits = symbol === "BTCUSDT" ? 2 : 2;
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits })}`;
+}
+
+function formatCryptoMove(currentValue, openValue) {
+  if (!Number.isFinite(currentValue) || !Number.isFinite(openValue) || openValue === 0) return "—";
+  const percent = ((currentValue - openValue) / openValue) * 100;
+  return `${percent >= 0 ? "+" : "−"}${Math.abs(percent).toFixed(2)}%`;
+}
+
+async function fetchStaticMarketSnapshot() {
+  const response = await fetch(`${import.meta.env.BASE_URL}market.json?cache=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Market snapshot failed: ${response.status}`);
+  return response.json();
+}
+
+function readStaticMarket(signal, snapshot) {
   const quote = snapshot.quotes?.[signal.symbol];
   if (!quote || !Number.isFinite(Number(quote.price))) throw new Error("Market snapshot returned no quote");
   const price = Number(quote.price);
@@ -1500,8 +1717,11 @@ async function fetchStaticMarket(signal) {
   };
 }
 
-async function fetchYahooMarket(signal) {
-  if (IS_STATIC_PAGES) return fetchStaticMarket(signal);
+async function fetchYahooMarket(signal, staticSnapshot = null) {
+  if (IS_STATIC_PAGES) {
+    if (!staticSnapshot) throw new Error("Market snapshot unavailable");
+    return readStaticMarket(signal, staticSnapshot);
+  }
   const response = await fetch(apiUrl(`/api/market/${encodeURIComponent(signal.symbol)}?range=1d&interval=5m&includePrePost=false`), { headers: { accept: "application/json" } });
   if (!response.ok) throw new Error(`Market feed failed: ${response.status}`);
   const payload = await response.json();
@@ -1578,9 +1798,10 @@ export function App() {
   const [profileVisible, setProfileVisible] = useState(true);
   const [language, setLanguage] = useState("ko");
   const [marketRows, setMarketRows] = useState(marketSignals);
+  const [cryptoRows, setCryptoRows] = useState(cryptoSignals);
   const [marketStatus, setMarketStatus] = useState("loading");
+  const [cryptoStatus, setCryptoStatus] = useState("connecting");
   const [marketUpdatedAt, setMarketUpdatedAt] = useState(null);
-  const [marketRefreshToken, setMarketRefreshToken] = useState(0);
   const [newsItems, setNewsItems] = useState(companies.find((company) => company.id === "nvidia")?.news ?? companies[0].news);
   const [newsStatus, setNewsStatus] = useState("loading");
 
@@ -1593,29 +1814,109 @@ export function App() {
 
   useEffect(() => {
     let cancelled = false;
+    let hasLoaded = false;
     async function loadMarketRows() {
-      setMarketStatus("loading");
+      if (!hasLoaded) setMarketStatus("loading");
+      let staticSnapshot = null;
+      if (IS_STATIC_PAGES) {
+        try {
+          staticSnapshot = await fetchStaticMarketSnapshot();
+        } catch {
+          staticSnapshot = null;
+        }
+      }
       const rows = await Promise.all(marketSignals.map(async (signal) => {
         try {
-          return await fetchYahooMarket(signal);
+          return await fetchYahooMarket(signal, staticSnapshot);
         } catch {
           return { ...signal, feed: "fallback" };
         }
       }));
       if (cancelled) return;
+      hasLoaded = true;
       const liveRows = rows.filter((row) => row.feed === "live");
       const scheduledRows = rows.filter((row) => row.feed === "scheduled");
       setMarketRows(rows);
       setMarketStatus(liveRows.length ? "live" : scheduledRows.length ? "scheduled" : "fallback");
-      setMarketUpdatedAt(liveRows[0]?.updatedAt ?? scheduledRows[0]?.updatedAt ?? Date.now());
+      const nextUpdatedAt = liveRows[0]?.updatedAt ?? scheduledRows[0]?.updatedAt ?? Date.now();
+      setMarketUpdatedAt((current) => Math.max(current ?? 0, nextUpdatedAt));
     }
     loadMarketRows();
-    const refreshTimer = window.setInterval(loadMarketRows, 60_000);
+    const refreshTimer = window.setInterval(loadMarketRows, 30_000);
     return () => {
       cancelled = true;
       window.clearInterval(refreshTimer);
     };
-  }, [marketRefreshToken]);
+  }, []);
+
+  useEffect(() => {
+    if (!("WebSocket" in window)) {
+      setCryptoStatus("unavailable");
+      return undefined;
+    }
+
+    let socket;
+    let retryTimer;
+    let disposed = false;
+    const histories = Object.fromEntries(cryptoSignals.map((signal) => [signal.symbol, []]));
+
+    function connect() {
+      if (disposed) return;
+      setCryptoStatus("connecting");
+      socket = new window.WebSocket("wss://data-stream.binance.vision/stream?streams=btcusdt@miniTicker/ethusdt@miniTicker");
+
+      socket.onopen = () => {
+        if (!disposed) setCryptoStatus("live");
+      };
+
+      socket.onmessage = (event) => {
+        if (disposed) return;
+        let payload;
+        try {
+          payload = JSON.parse(event.data);
+        } catch {
+          return;
+        }
+        const data = payload.data ?? payload;
+        const symbol = data.s;
+        if (!histories[symbol]) return;
+        const price = Number(data.c);
+        const open = Number(data.o);
+        if (!Number.isFinite(price)) return;
+
+        histories[symbol].push(price);
+        if (histories[symbol].length > 18) histories[symbol].shift();
+        const move = formatCryptoMove(price, open);
+        const updatedAt = Number(data.E) || Date.now();
+        setCryptoRows((rows) => rows.map((row) => row.symbol === symbol ? {
+          ...row,
+          value: formatCryptoValue(symbol, price),
+          move,
+          tone: move.startsWith("−") ? "orange" : "blue",
+          points: buildSparkline(histories[symbol]) ?? row.points,
+          feed: "stream",
+          updatedAt,
+          tick: row.tick + 1,
+        } : row));
+        setCryptoStatus("live");
+        setMarketUpdatedAt((current) => Math.max(current ?? 0, updatedAt));
+      };
+
+      socket.onerror = () => socket?.close();
+      socket.onclose = () => {
+        if (disposed) return;
+        setCryptoStatus("retrying");
+        retryTimer = window.setTimeout(connect, 3_000);
+      };
+    }
+
+    connect();
+    return () => {
+      disposed = true;
+      window.clearTimeout(retryTimer);
+      if (socket && socket.readyState < window.WebSocket.CLOSING) socket.close();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1640,14 +1941,27 @@ export function App() {
   const visibleCompanies = useMemo(() => {
     const query = search.trim().toLowerCase();
     return companies.filter((company) => {
-      const matchesSearch = !query || [company.name, company.country, company.category, company.role, company.city, getSectorLabel(company.sector, "en")].some((field) => field.toLowerCase().includes(query));
+      const searchableFields = [
+        company.name,
+        company.country,
+        getCountryLabel(company.country, language),
+        company.category,
+        getCompanyText(company, "category", language),
+        company.role,
+        getCompanyText(company, "role", language),
+        company.city,
+        getCityLabel(company.city, language),
+        getSectorLabel(company.sector, "en"),
+        getSectorLabel(company.sector, language),
+      ];
+      const matchesSearch = !query || searchableFields.filter(Boolean).some((field) => String(field).toLowerCase().includes(query));
       const matchesFilter = signalFilter === "all" || company.status === signalFilter;
       const matchesSector = sectorFilter === "all" || company.sector === sectorFilter;
       const matchesCountry = selectedCountry === "all" || company.country === selectedCountry;
       const matchesNav = activeNav !== "watchlist" || company.watchlist;
       return matchesSearch && matchesFilter && matchesSector && matchesCountry && matchesNav;
     });
-  }, [activeNav, search, selectedCountry, sectorFilter, signalFilter]);
+  }, [activeNav, language, search, selectedCountry, sectorFilter, signalFilter]);
 
   function selectCompany(id) {
     setSelectedId(id);
@@ -1691,11 +2005,23 @@ export function App() {
     if (company) selectCompany(company.id);
   }
 
-  const activeViewLabel = activeNav === "watchlist" ? `${copy.watchlist} // 12 ${language === "ko" ? "확신" : "CONVICTIONS"}` : activeNav === "atlas" ? `${copy.company} // ${language === "ko" ? "전체 국가" : "ALL COUNTRIES"}` : activeNav === "screener" ? `${copy.screener} // ${language === "ko" ? "필터링된 시그널" : "FILTERED SIGNALS"}` : `${copy.company} // ${language === "ko" ? "전체 국가" : "ALL COUNTRIES"}`;
-  const marketFeedLabel = marketStatus === "live" ? copy.feedLive : marketStatus === "scheduled" ? copy.feedScheduled : marketStatus === "loading" ? copy.feedUpdating : copy.feedSnapshot;
+  const watchlistCount = companies.filter((company) => company.watchlist).length;
+  const activeSectorLabel = getSectorLabel(sectorFilter, language);
+  const activeViewLabel = activeNav === "watchlist"
+    ? `${copy.watchlist} // ${visibleCompanies.length}/${watchlistCount}`
+    : activeNav === "screener"
+      ? `${copy.screener} // ${visibleCompanies.length}/${companies.length}`
+      : `${copy.company} // ${visibleCompanies.length}/${companies.length} // ${activeSectorLabel}`;
+  const marketFeedLabel = cryptoStatus === "live"
+    ? (IS_STATIC_PAGES ? copy.autoFeedScheduled : copy.autoFeed)
+    : cryptoStatus === "retrying"
+      ? copy.reconnecting
+      : marketStatus === "loading" ? copy.feedUpdating : copy.connecting;
   const newsFeedLabel = newsStatus === "live" ? copy.live : newsStatus === "loading" ? copy.feedUpdating : copy.fallback;
-  const marketAsOf = marketUpdatedAt ? new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" }).format(new Date(marketUpdatedAt)).toUpperCase() : "—";
+  const marketAsOf = marketUpdatedAt ? new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Asia/Seoul" }).format(new Date(marketUpdatedAt)).toUpperCase() : "—";
   const coverageLabel = language === "ko" ? `추적 유니버스: ${companies.length}개 기업 / ${sectorOptions.length - 1}개 산업 레이어` : `TRACKED UNIVERSE: ${companies.length} COMPANIES / ${sectorOptions.length - 1} AI SECTORS`;
+  const displayedMarketRows = [...cryptoRows, ...marketRows];
+  const autoStatusLabel = cryptoStatus === "live" ? copy.auto : cryptoStatus === "retrying" ? copy.reconnecting : copy.connecting;
 
   return (
     <main className="app-shell" style={{ "--paper-texture": `url(${import.meta.env.BASE_URL}paper-texture.png)` }}>
@@ -1793,7 +2119,7 @@ export function App() {
             <span className="coverage-label">{coverageLabel}</span>
             <div className="map-toolbar-actions">
               <button type="button" onClick={resetView}><i className="ph ph-arrows-out" /> {copy.reset}</button>
-              <span className={`live-label ${marketStatus === "live" ? "is-live" : ""}`}><i className="ph ph-broadcast" /> {marketFeedLabel}</span>
+              <span className={`live-label ${cryptoStatus === "live" ? "is-live" : ""}`}><i className="ph ph-broadcast" /> {marketFeedLabel}</span>
             </div>
           </div>
 
@@ -1801,7 +2127,8 @@ export function App() {
             <span className="sector-ribbon-label">{copy.sectorLayers}</span>
             {sectorOptions.map((sector) => (
               <button key={sector.id} type="button" className={sectorFilter === sector.id ? "is-active" : ""} onClick={() => setSectorFilter(sector.id)} aria-pressed={sectorFilter === sector.id}>
-                {language === "ko" ? sector.labelKo : sector.label}
+                <span>{language === "ko" ? sector.labelKo : sector.label}</span>
+                <em>{sector.id === "all" ? companies.length : companies.filter((company) => company.sector === sector.id).length}</em>
               </button>
             ))}
           </div>
@@ -1839,10 +2166,10 @@ export function App() {
               </Geographies>
               {visibleCompanies.map((company) => (
                 <Marker key={company.id} coordinates={company.coordinates} onClick={() => selectCompany(company.id)}>
-                  <g className={`company-marker ${company.id === selectedId ? "is-selected" : ""} ${company.signalTone} sector-${company.sector}`} role="button" tabIndex="0" aria-label={`${language === "ko" ? "선택" : "Select"} ${company.name}`}>
+                  <g className={`company-marker ${company.id === selectedId ? "is-selected" : ""} ${company.signalTone} sector-${company.sector}`} role="button" tabIndex="0" aria-label={`${language === "ko" ? "선택" : "Select"} ${company.name}`} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectCompany(company.id); } }}>
                     <title>{company.name} · {getCompanyText(company, "category", language)}</title>
-                    <circle className="marker-orbit" r={company.id === selectedId ? 10 : 5.2} />
-                    <circle className="marker-core" r={company.id === selectedId ? 4.2 : 2.4} />
+                    <circle className="marker-orbit" r={company.id === selectedId ? 11 : 6.5} />
+                    <circle className="marker-core" r={company.id === selectedId ? 5 : 3.2} />
                     {company.showLabel && <text x={company.id === "sakana" ? -10 : 12} y={company.id === selectedId ? -13 : 4} className="marker-label">{company.markerLabel}</text>}
                   </g>
                 </Marker>
@@ -1905,8 +2232,8 @@ export function App() {
                 <div className="company-facts">
                   <div><span>{copy.founded}</span><strong>{selectedCompany.founded}</strong></div>
                   <div><span>{copy.headquarters}</span><strong>{getCityLabel(selectedCompany.city, language)}</strong></div>
-                  <div><span>{copy.employees}</span><strong>{selectedCompany.employees}</strong></div>
-                  <div><span>{copy.funding}</span><strong>{selectedCompany.funding}</strong></div>
+                  <div><span>{copy.employees}</span><strong>{getCompanyValue(selectedCompany, "employees", language)}</strong></div>
+                  <div><span>{copy.funding}</span><strong>{getCompanyValue(selectedCompany, "funding", language)}</strong></div>
                 </div>
                 <button className="profile-link" type="button" onClick={() => setBriefingOpen(true)}>{copy.fullProfile} <i className="ph ph-arrow-right" /></button>
               </div>
@@ -1947,13 +2274,13 @@ export function App() {
 
       <aside className="signal-rail">
         <div className="rail-header">
-          <div className="rail-heading-row"><h2>{copy.marketSignals}</h2><button className="refresh-data" type="button" onClick={() => setMarketRefreshToken((value) => value + 1)} aria-label={copy.refresh}><i className={`ph ph-arrows-clockwise ${marketStatus === "loading" ? "is-spinning" : ""}`} /> <span>{copy.refresh}</span></button></div>
+          <div className="rail-heading-row"><h2>{copy.marketSignals}</h2><span className={`auto-status ${cryptoStatus === "live" ? "is-live" : ""}`}><i className="ph ph-broadcast" /> {autoStatusLabel}</span></div>
           <span className="rail-rule" />
         </div>
         <div className="market-list">
-          {marketRows.map((signal) => (
-            <div className="market-row" key={signal.name}>
-              <div className="market-row-top"><strong>{language === "ko" ? signal.nameKo : signal.name}</strong><span>{signal.value}</span></div>
+          {displayedMarketRows.map((signal) => (
+            <div className={`market-row ${signal.feed === "stream" ? "is-streaming" : ""}`} key={`${signal.symbol}-${signal.tick ?? 0}`}>
+              <div className="market-row-top"><strong>{language === "ko" ? signal.nameKo : signal.name}{signal.feed === "stream" && <em className="feed-badge is-live">1S</em>}</strong><span>{signal.value}</span></div>
               <div className="market-row-bottom"><small>{signal.ticker}</small><span className={`market-move ${signal.tone}`}>{signal.move}</span></div>
               <Sparkline points={signal.points} tone={signal.tone} />
             </div>
@@ -1961,7 +2288,7 @@ export function App() {
         </div>
         <div className="rail-asof">{copy.asOf} {marketAsOf} KST</div>
         <blockquote>{copy.quote}<cite>— SIGNAL ROOM</cite></blockquote>
-        <div className="rail-footer"><span className={marketStatus === "live" || marketStatus === "scheduled" ? "is-live" : ""}><i className="ph ph-broadcast" /> {marketStatus === "live" || marketStatus === "scheduled" ? (marketStatus === "scheduled" ? copy.feedScheduled : copy.sourceLive) : copy.sourceSnapshot}</span><span>ATLAS-INTEL / v1.0</span></div>
+        <div className="rail-footer"><span className={cryptoStatus === "live" ? "is-live" : ""}><i className="ph ph-broadcast" /> {cryptoStatus === "live" ? copy.cryptoStream : copy.sourceSnapshot}</span><span>ATLAS-INTEL / v1.1</span></div>
       </aside>
 
       {newsOpen && (
@@ -1987,7 +2314,7 @@ export function App() {
           <section className="briefing-modal" role="dialog" aria-modal="true" aria-labelledby="briefing-title" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header"><div><span className="section-kicker">{copy.fieldNote} / {getCountryLabel(selectedCompany.country, language).toUpperCase()}</span><h2 id="briefing-title">{selectedCompany.name}</h2></div><button type="button" onClick={() => setBriefingOpen(false)} aria-label={language === "ko" ? "프로필 닫기" : "Close profile"}><i className="ph ph-x" /></button></div>
             <p className="modal-thesis">{getCompanyText(selectedCompany, "thesis", language)}</p>
-            <div className="briefing-grid"><div><span>{copy.marketRole}</span><strong>{getCompanyText(selectedCompany, "role", language)}</strong></div><div><span>{copy.valuation}</span><strong>{selectedCompany.valuation}</strong></div><div><span>{copy.latestRound}</span><strong>{selectedCompany.latestRound}</strong></div><div><span>{copy.latestSignal}</span><strong className={selectedCompany.signalTone}>{getStatusLabel(selectedCompany.signalLabel, language)}</strong></div></div>
+            <div className="briefing-grid"><div><span>{copy.marketRole}</span><strong>{getCompanyText(selectedCompany, "role", language)}</strong></div><div><span>{copy.valuation}</span><strong>{getCompanyValue(selectedCompany, "valuation", language)}</strong></div><div><span>{copy.latestRound}</span><strong>{getCompanyValue(selectedCompany, "latestRound", language)}</strong></div><div><span>{copy.latestSignal}</span><strong className={selectedCompany.signalTone}>{getStatusLabel(selectedCompany.signalLabel, language)}</strong></div></div>
             <div className="modal-footnote">{copy.snapshotFoot}</div>
           </section>
         </div>
