@@ -9,6 +9,16 @@ import {
 import "@phosphor-icons/web/regular";
 import geoUrl from "world-atlas/countries-110m.json";
 
+function makeFallbackNews(source, url, headlines, headlinesKo = []) {
+  return headlines.map((headline, index) => ({
+    date: index === 0 ? "AUG 13, 2026" : index === 1 ? "AUG 01, 2026" : "JUL 18, 2026",
+    source,
+    headline,
+    headlineKo: headlinesKo[index] ?? headline,
+    url,
+  }));
+}
+
 const companies = [
   {
     id: "sensetime",
@@ -17,6 +27,7 @@ const companies = [
     city: "Hong Kong",
     mapNames: ["Hong Kong"],
     coordinates: [114.1694, 22.3193],
+    sector: "robotics",
     category: "Computer vision",
     role: "Enterprise SaaS & Solutions",
     status: "PUBLIC",
@@ -69,6 +80,7 @@ const companies = [
     city: "San Francisco",
     mapNames: ["United States of America"],
     coordinates: [-122.4194, 37.7749],
+    sector: "models",
     category: "Foundation models",
     role: "API + Enterprise",
     status: "PRIVATE",
@@ -115,6 +127,7 @@ const companies = [
     city: "Paris",
     mapNames: ["France"],
     coordinates: [2.3522, 48.8566],
+    sector: "models",
     category: "Open-weight models",
     role: "Models + API",
     status: "PRIVATE",
@@ -161,6 +174,7 @@ const companies = [
     city: "Hangzhou",
     mapNames: ["China"],
     coordinates: [120.1551, 30.2741],
+    sector: "models",
     category: "Foundation models",
     role: "Research + API",
     status: "PRIVATE",
@@ -207,6 +221,7 @@ const companies = [
     city: "Tokyo",
     mapNames: ["Japan"],
     coordinates: [139.6917, 35.6895],
+    sector: "models",
     category: "Model research",
     role: "Research + Licensing",
     status: "PRIVATE",
@@ -253,6 +268,7 @@ const companies = [
     city: "Santa Clara",
     mapNames: ["United States of America"],
     coordinates: [-121.9552, 37.3541],
+    sector: "semis",
     category: "AI infrastructure",
     role: "Accelerators + Systems",
     status: "PUBLIC",
@@ -293,6 +309,7 @@ const companies = [
     city: "London",
     mapNames: ["United Kingdom"],
     coordinates: [-0.1276, 51.5072],
+    sector: "cloud",
     category: "AI infrastructure",
     role: "Sovereign cloud",
     status: "PRIVATE",
@@ -333,6 +350,7 @@ const companies = [
     city: "Abu Dhabi",
     mapNames: ["United Arab Emirates"],
     coordinates: [54.3773, 24.4539],
+    sector: "applied",
     category: "Applied AI",
     role: "Sovereign AI platform",
     status: "PRIVATE",
@@ -366,18 +384,743 @@ const companies = [
       },
     ],
   },
+  {
+    id: "amd",
+    name: "AMD",
+    country: "United States",
+    city: "Santa Clara",
+    mapNames: ["United States of America"],
+    coordinates: [-121.9552, 37.3541],
+    sector: "semis",
+    category: "AI semiconductors",
+    categoryKo: "AI 반도체",
+    role: "Accelerators + CPUs",
+    roleKo: "가속기·CPU",
+    status: "PUBLIC",
+    ticker: "NASDAQ: AMD",
+    founded: "1969",
+    employees: "~31,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+14%",
+    signalLabel: "ACCELERATING",
+    signalTone: "orange",
+    thesis: "A second-source accelerator and CPU platform pushing competition deeper into the AI data center stack.",
+    thesisKo: "가속기와 CPU를 함께 가져가며 AI 데이터센터 스택의 경쟁을 넓히는 2위 인프라 플랫폼입니다.",
+    watchlist: true,
+    showLabel: false,
+    markerLabel: "SANTA CLARA",
+    chart: [5, 7, 6, 9, 11, 10, 13, 15, 14, 17, 18, 20, 22],
+    news: makeFallbackNews("AMD", "https://www.amd.com/en/newsroom.html", [
+      "AMD expands its accelerator roadmap for large-scale AI systems",
+      "AI server demand turns the chip stack into a wider two-player race",
+    ], [
+      "AMD, 대규모 AI 시스템을 위한 가속기 로드맵 확장",
+      "AI 서버 수요가 반도체 경쟁을 더 넓은 2강 구도로 전개",
+    ]),
+  },
+  {
+    id: "microsoft",
+    name: "Microsoft",
+    country: "United States",
+    city: "Redmond",
+    mapNames: ["United States of America"],
+    coordinates: [-122.1215, 47.674],
+    sector: "cloud",
+    category: "Cloud AI platform",
+    categoryKo: "클라우드 AI 플랫폼",
+    role: "Azure + Copilots",
+    roleKo: "Azure·코파일럿",
+    status: "PUBLIC",
+    ticker: "NASDAQ: MSFT",
+    founded: "1975",
+    employees: "~228,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+19%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "blue",
+    thesis: "The distribution layer for enterprise AI, monetizing models through cloud capacity, software seats, and developer tools.",
+    thesisKo: "클라우드 용량·소프트웨어 좌석·개발자 도구를 통해 기업 AI를 유통하는 핵심 플랫폼입니다.",
+    watchlist: true,
+    showLabel: true,
+    markerLabel: "REDMOND",
+    chart: [7, 8, 10, 11, 12, 13, 15, 14, 17, 18, 20, 22, 25],
+    news: makeFallbackNews("THE VERGE", "https://blogs.microsoft.com/", [
+      "Azure AI capacity becomes the operating layer for enterprise copilots",
+      "Microsoft folds more agent tooling into its developer platform",
+    ], [
+      "Azure AI 용량이 기업 코파일럿의 운영 계층으로 부상",
+      "Microsoft, 개발자 플랫폼에 에이전트 도구를 더 깊게 통합",
+    ]),
+  },
+  {
+    id: "palantir",
+    name: "Palantir",
+    country: "United States",
+    city: "Denver",
+    mapNames: ["United States of America"],
+    coordinates: [-104.9903, 39.7392],
+    sector: "applied",
+    category: "Applied enterprise AI",
+    categoryKo: "엔터프라이즈 응용 AI",
+    role: "Data + Operations",
+    roleKo: "데이터·운영 소프트웨어",
+    status: "PUBLIC",
+    ticker: "NASDAQ: PLTR",
+    founded: "2003",
+    employees: "~3,900",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+23%",
+    signalLabel: "MOMENTUM",
+    signalTone: "orange",
+    thesis: "An application-layer AI company turning messy operational data into workflows for governments and large enterprises.",
+    thesisKo: "정부와 대기업의 복잡한 운영 데이터를 실제 업무 흐름으로 바꾸는 애플리케이션 계층 AI 기업입니다.",
+    watchlist: true,
+    showLabel: false,
+    markerLabel: "DENVER",
+    chart: [3, 5, 7, 8, 12, 11, 15, 18, 17, 21, 23, 25, 29],
+    news: makeFallbackNews("PALANTIR", "https://investors.palantir.com/news", [
+      "Palantir expands operational AI deployments across regulated industries",
+      "Enterprise AI buyers move from pilots toward production workflows",
+    ], [
+      "Palantir, 규제 산업 전반으로 운영 AI 배포 확대",
+      "기업 AI 구매자들이 파일럿에서 실제 업무 흐름으로 이동",
+    ]),
+  },
+  {
+    id: "tesla",
+    name: "Tesla",
+    country: "United States",
+    city: "Austin",
+    mapNames: ["United States of America"],
+    coordinates: [-97.7431, 30.2672],
+    sector: "robotics",
+    category: "Autonomy & robotics",
+    categoryKo: "자율주행·로보틱스",
+    role: "Vision + Fleet Data",
+    roleKo: "비전·플릿 데이터",
+    status: "PUBLIC",
+    ticker: "NASDAQ: TSLA",
+    founded: "2003",
+    employees: "~125,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+11%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A physical-AI bet built on fleet-scale vision data, autonomy software, and a robotics ambition beyond vehicles.",
+    thesisKo: "차량을 넘어 대규모 비전 데이터·자율주행 소프트웨어·로봇으로 확장하는 피지컬 AI 베팅입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "AUSTIN",
+    chart: [8, 7, 9, 10, 8, 11, 13, 12, 15, 14, 16, 18, 19],
+    news: makeFallbackNews("TESLA", "https://www.tesla.com/blog", [
+      "Tesla connects fleet data and autonomy software in its physical-AI push",
+      "Robotics becomes a larger part of the company’s long-term AI narrative",
+    ], [
+      "Tesla, 피지컬 AI 전략에서 플릿 데이터와 자율주행 소프트웨어 연결",
+      "로보틱스가 회사의 장기 AI 스토리에서 차지하는 비중 확대",
+    ]),
+  },
+  {
+    id: "tsmc",
+    name: "TSMC",
+    country: "Taiwan",
+    city: "Hsinchu",
+    mapNames: ["Taiwan"],
+    coordinates: [120.9647, 24.8047],
+    sector: "semis",
+    category: "AI chip foundry",
+    categoryKo: "AI 칩 파운드리",
+    role: "Advanced Manufacturing",
+    roleKo: "첨단 제조",
+    status: "PUBLIC",
+    ticker: "NYSE: TSM / TWSE: 2330",
+    founded: "1987",
+    employees: "~83,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+20%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "orange",
+    thesis: "The manufacturing chokepoint behind the AI supply chain, translating accelerator demand into leading-edge capacity.",
+    thesisKo: "가속기 수요를 최첨단 생산능력으로 전환하는 AI 공급망의 핵심 제조 병목입니다.",
+    watchlist: true,
+    showLabel: true,
+    markerLabel: "HSINCHU",
+    chart: [6, 8, 9, 10, 12, 13, 15, 16, 18, 19, 21, 24, 27],
+    news: makeFallbackNews("TSMC", "https://pr.tsmc.com/english/news", [
+      "TSMC keeps advanced packaging at the center of the AI chip buildout",
+      "Foundry capacity planning becomes a strategic variable for AI investors",
+    ], [
+      "TSMC, AI 칩 증설의 중심에 첨단 패키징 배치",
+      "파운드리 생산능력 계획이 AI 투자자의 핵심 변수가 됨",
+    ]),
+  },
+  {
+    id: "asml",
+    name: "ASML",
+    country: "Netherlands",
+    city: "Veldhoven",
+    mapNames: ["Netherlands"],
+    coordinates: [5.406, 51.42],
+    sector: "semis",
+    category: "Chipmaking systems",
+    categoryKo: "반도체 장비",
+    role: "Lithography",
+    roleKo: "리소그래피",
+    status: "PUBLIC",
+    ticker: "NASDAQ: ASML / AMS: ASML",
+    founded: "1984",
+    employees: "~43,700",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+13%",
+    signalLabel: "STEADY",
+    signalTone: "blue",
+    thesis: "A picks-and-shovels supplier whose lithography systems define how quickly the AI semiconductor roadmap can move.",
+    thesisKo: "리소그래피 장비를 통해 AI 반도체 로드맵의 속도를 결정하는 핵심 장비 공급자입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "VELDHOVEN",
+    chart: [10, 11, 10, 12, 13, 14, 13, 15, 16, 15, 17, 18, 20],
+    news: makeFallbackNews("ASML", "https://www.asml.com/en/news-stories", [
+      "ASML frames high-NA lithography as the next constraint on AI compute",
+      "Chipmaking equipment orders track the next wave of AI capacity planning",
+    ], [
+      "ASML, 하이 NA 리소그래피를 AI 컴퓨트의 다음 제약으로 제시",
+      "반도체 장비 주문이 차기 AI 생산능력 계획을 반영",
+    ]),
+  },
+  {
+    id: "arm",
+    name: "Arm",
+    country: "United Kingdom",
+    city: "Cambridge",
+    mapNames: ["United Kingdom"],
+    coordinates: [0.1218, 52.2053],
+    sector: "semis",
+    category: "AI compute architecture",
+    categoryKo: "AI 컴퓨트 아키텍처",
+    role: "CPU IP + Edge",
+    roleKo: "CPU IP·엣지 컴퓨팅",
+    status: "PUBLIC",
+    ticker: "NASDAQ: ARM",
+    founded: "1990",
+    employees: "~8,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+12%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "The instruction-set layer reaching from data-center CPUs to edge devices where efficient AI inference has to travel.",
+    thesisKo: "데이터센터 CPU부터 엣지 디바이스까지 효율적인 AI 추론을 연결하는 명령어 아키텍처 계층입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "CAMBRIDGE",
+    chart: [5, 6, 7, 6, 9, 10, 9, 12, 11, 13, 14, 15, 17],
+    news: makeFallbackNews("ARM", "https://newsroom.arm.com/", [
+      "Arm pushes compute efficiency from data centers into the edge",
+      "CPU architecture becomes a larger part of the AI infrastructure map",
+    ], [
+      "Arm, 데이터센터에서 엣지까지 컴퓨트 효율성 확대",
+      "CPU 아키텍처가 AI 인프라 지도에서 차지하는 비중 확대",
+    ]),
+  },
+  {
+    id: "samsung",
+    name: "Samsung Electronics",
+    country: "South Korea",
+    city: "Suwon",
+    mapNames: ["South Korea"],
+    coordinates: [127.0286, 37.2636],
+    sector: "semis",
+    category: "Memory & AI devices",
+    categoryKo: "메모리·AI 디바이스",
+    role: "HBM + Foundry",
+    roleKo: "HBM·파운드리",
+    status: "PUBLIC",
+    ticker: "KRX: 005930",
+    founded: "1969",
+    employees: "~270,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+16%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "orange",
+    thesis: "A diversified hardware platform where memory bandwidth, foundry capacity, and on-device AI meet in one balance sheet.",
+    thesisKo: "메모리 대역폭·파운드리 생산능력·온디바이스 AI가 한 기업 안에서 만나는 종합 하드웨어 플랫폼입니다.",
+    watchlist: true,
+    showLabel: true,
+    markerLabel: "SUWON",
+    chart: [7, 8, 9, 11, 10, 12, 14, 13, 16, 18, 17, 20, 22],
+    news: makeFallbackNews("SAMSUNG", "https://news.samsung.com/global/", [
+      "Samsung positions memory and on-device intelligence as one AI stack",
+      "HBM and advanced-node capacity remain central to Korea’s AI hardware story",
+    ], [
+      "Samsung, 메모리와 온디바이스 지능을 하나의 AI 스택으로 연결",
+      "HBM과 첨단 공정 생산능력이 한국 AI 하드웨어의 핵심 변수로 부상",
+    ]),
+  },
+  {
+    id: "skhynix",
+    name: "SK hynix",
+    country: "South Korea",
+    city: "Icheon",
+    mapNames: ["South Korea"],
+    coordinates: [127.435, 37.272],
+    sector: "semis",
+    category: "AI memory",
+    categoryKo: "AI 메모리",
+    role: "HBM + DRAM",
+    roleKo: "HBM·DRAM",
+    status: "PUBLIC",
+    ticker: "KRX: 000660",
+    founded: "1983",
+    employees: "~40,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+22%",
+    signalLabel: "MOMENTUM",
+    signalTone: "orange",
+    thesis: "A high-bandwidth memory specialist sitting directly beneath the expanding training and inference workload.",
+    thesisKo: "확대되는 학습·추론 워크로드 바로 아래에서 고대역폭 메모리를 공급하는 전문 기업입니다.",
+    watchlist: true,
+    showLabel: false,
+    markerLabel: "ICHEON",
+    chart: [4, 6, 8, 9, 11, 12, 15, 17, 16, 20, 22, 24, 28],
+    news: makeFallbackNews("SK HYNIX", "https://news.skhynix.com/", [
+      "SK hynix links HBM expansion to the next wave of AI accelerators",
+      "Memory supply becomes a first-order variable in model economics",
+    ], [
+      "SK하이닉스, HBM 증설을 차세대 AI 가속기와 연결",
+      "메모리 공급이 모델 경제성의 1차 변수로 부상",
+    ]),
+  },
+  {
+    id: "naver",
+    name: "NAVER",
+    country: "South Korea",
+    city: "Seongnam",
+    mapNames: ["South Korea"],
+    coordinates: [127.105, 37.3596],
+    sector: "cloud",
+    category: "AI platform & search",
+    categoryKo: "AI 플랫폼·검색",
+    role: "Cloud + Commerce",
+    roleKo: "클라우드·커머스",
+    status: "PUBLIC",
+    ticker: "KRX: 035420",
+    founded: "1999",
+    employees: "~4,500",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+15%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "blue",
+    thesis: "A local platform stack connecting search, commerce, cloud, and Korean-language AI distribution.",
+    thesisKo: "검색·커머스·클라우드와 한국어 AI 유통을 하나로 연결하는 지역 플랫폼 스택입니다.",
+    watchlist: true,
+    showLabel: true,
+    markerLabel: "SEONGNAM",
+    chart: [5, 7, 6, 8, 9, 11, 10, 12, 14, 13, 15, 17, 19],
+    news: makeFallbackNews("NAVER", "https://www.navercorp.com/en/media/pressRelease", [
+      "NAVER connects local search and cloud distribution to its AI platform layer",
+      "Korean-language AI becomes a strategic wedge for regional platform power",
+    ], [
+      "NAVER, 로컬 검색과 클라우드 유통을 AI 플랫폼 계층으로 연결",
+      "한국어 AI가 지역 플랫폼 경쟁력의 전략적 진입점으로 부상",
+    ]),
+  },
+  {
+    id: "pony",
+    name: "Pony.ai",
+    country: "China",
+    city: "Guangzhou",
+    mapNames: ["China"],
+    coordinates: [113.2644, 23.1291],
+    sector: "robotics",
+    category: "Autonomous mobility",
+    categoryKo: "자율주행 모빌리티",
+    role: "Robotaxis + Trucks",
+    roleKo: "로보택시·자율주행 트럭",
+    status: "PUBLIC",
+    ticker: "NASDAQ: PONY",
+    founded: "2016",
+    employees: "~1,800",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+17%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A China-based autonomy platform turning perception stacks into robotaxi and commercial trucking deployments.",
+    thesisKo: "인지 스택을 로보택시와 상업용 자율주행 트럭으로 전환하는 중국 자율주행 플랫폼입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "GUANGZHOU",
+    chart: [3, 4, 6, 7, 6, 9, 10, 12, 11, 13, 14, 16, 18],
+    news: makeFallbackNews("PONY AI", "https://www.pony.ai/news", [
+      "Pony.ai expands commercial autonomy pilots across Chinese cities",
+      "Robotaxi economics move closer to the center of the mobility AI debate",
+    ], [
+      "Pony.ai, 중국 주요 도시에서 상업용 자율주행 파일럿 확대",
+      "로보택시 경제성이 모빌리티 AI 논쟁의 중심으로 이동",
+    ]),
+  },
+  {
+    id: "fanuc",
+    name: "FANUC",
+    country: "Japan",
+    city: "Oshino",
+    mapNames: ["Japan"],
+    coordinates: [138.607, 35.663],
+    sector: "robotics",
+    category: "Industrial robotics",
+    categoryKo: "산업용 로보틱스",
+    role: "Factory Automation",
+    roleKo: "공장 자동화",
+    status: "PUBLIC",
+    ticker: "TSE: 6954",
+    founded: "1956",
+    employees: "~9,500",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+10%",
+    signalLabel: "STEADY",
+    signalTone: "blue",
+    thesis: "A factory-automation incumbent that turns machine vision, motion control, and industrial data into physical AI.",
+    thesisKo: "머신비전·모션 제어·산업 데이터를 피지컬 AI로 전환하는 공장 자동화 기업입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "OSHINO",
+    chart: [8, 8, 9, 10, 9, 11, 10, 12, 13, 12, 14, 15, 16],
+    news: makeFallbackNews("FANUC", "https://www.fanucamerica.com/news", [
+      "FANUC brings more vision and adaptive control into factory automation",
+      "Industrial robotics demand becomes a measurable AI adoption signal",
+    ], [
+      "FANUC, 공장 자동화에 비전과 적응형 제어를 더 깊게 적용",
+      "산업용 로보틱스 수요가 AI 도입을 보여주는 지표로 부상",
+    ]),
+  },
+  {
+    id: "recursion",
+    name: "Recursion",
+    country: "United States",
+    city: "Salt Lake City",
+    mapNames: ["United States of America"],
+    coordinates: [-111.891, 40.7608],
+    sector: "biotech",
+    category: "AI drug discovery",
+    categoryKo: "AI 신약개발",
+    role: "Biology + Models",
+    roleKo: "바이오 데이터·모델",
+    status: "PUBLIC",
+    ticker: "NASDAQ: RXRX",
+    founded: "2013",
+    employees: "~750",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+18%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "orange",
+    thesis: "A data-native biotech using automation and machine learning to compress the search space for new medicines.",
+    thesisKo: "자동화와 머신러닝으로 신약 후보 탐색 공간을 줄이는 데이터 중심 바이오테크입니다.",
+    watchlist: true,
+    showLabel: false,
+    markerLabel: "SALT LAKE CITY",
+    chart: [3, 5, 4, 7, 9, 8, 11, 13, 12, 15, 16, 18, 21],
+    news: makeFallbackNews("RECURSION", "https://ir.recursion.com/news-releases", [
+      "Recursion connects large-scale biology data to its AI drug pipeline",
+      "AI-native discovery platforms look for proof beyond model benchmarks",
+    ], [
+      "Recursion, 대규모 바이오 데이터와 AI 신약 파이프라인 연결",
+      "AI 신약개발 플랫폼이 모델 벤치마크를 넘어 실제 증거를 추적",
+    ]),
+  },
+  {
+    id: "isomorphic",
+    name: "Isomorphic Labs",
+    country: "United Kingdom",
+    city: "London",
+    mapNames: ["United Kingdom"],
+    coordinates: [-0.1276, 51.5072],
+    sector: "biotech",
+    category: "AI drug discovery",
+    categoryKo: "AI 신약개발",
+    role: "Structure + Biology",
+    roleKo: "단백질 구조·바이오",
+    status: "PRIVATE",
+    ticker: "PRIVATE",
+    founded: "2021",
+    employees: "~200",
+    funding: "Undisclosed",
+    valuation: "Private",
+    latestRound: "Strategic capital",
+    signal: "+16%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A research-led company translating structure prediction into partnerships and a new computational drug-discovery stack.",
+    thesisKo: "구조 예측 연구를 파트너십과 새로운 계산 신약개발 스택으로 번역하는 연구 중심 기업입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "LONDON",
+    chart: [4, 5, 6, 7, 7, 9, 10, 11, 10, 12, 13, 15, 17],
+    news: makeFallbackNews("ISOMORPHIC LABS", "https://www.isomorphiclabs.com/news", [
+      "Isomorphic Labs expands partnerships around AI-designed medicines",
+      "The drug-discovery layer becomes a new frontier for applied AI capital",
+    ], [
+      "Isomorphic Labs, AI 설계 신약을 둘러싼 파트너십 확대",
+      "신약개발 계층이 응용 AI 자본의 새로운 프런티어로 부상",
+    ]),
+  },
+  {
+    id: "dataiku",
+    name: "Dataiku",
+    country: "France",
+    city: "Paris",
+    mapNames: ["France"],
+    coordinates: [2.3522, 48.8566],
+    sector: "applied",
+    category: "Enterprise AI platform",
+    categoryKo: "엔터프라이즈 AI 플랫폼",
+    role: "Analytics + Governance",
+    roleKo: "분석·거버넌스",
+    status: "PRIVATE",
+    ticker: "PRIVATE",
+    founded: "2013",
+    employees: "~1,000",
+    funding: "$847M",
+    valuation: "Private",
+    latestRound: "Series F",
+    signal: "+13%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A governance-first layer helping large organizations move from isolated experiments to repeatable AI operations.",
+    thesisKo: "대기업이 고립된 실험에서 반복 가능한 AI 운영으로 이동하도록 돕는 거버넌스 중심 플랫폼입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "PARIS",
+    chart: [4, 5, 6, 8, 7, 9, 10, 11, 12, 11, 13, 14, 16],
+    news: makeFallbackNews("DATAIKU", "https://blog.dataiku.com/", [
+      "Dataiku pushes governed AI operations deeper into enterprise teams",
+      "Model adoption shifts toward data quality, risk controls, and repeatability",
+    ], [
+      "Dataiku, 거버넌스형 AI 운영을 기업 조직 깊숙이 확장",
+      "모델 도입의 초점이 데이터 품질·리스크 통제·반복성으로 이동",
+    ]),
+  },
+  {
+    id: "mobileye",
+    name: "Mobileye",
+    country: "Israel",
+    city: "Jerusalem",
+    mapNames: ["Israel"],
+    coordinates: [35.2137, 31.7683],
+    sector: "robotics",
+    category: "Autonomous driving",
+    categoryKo: "자율주행",
+    role: "ADAS + Vision",
+    roleKo: "ADAS·컴퓨터 비전",
+    status: "PUBLIC",
+    ticker: "NASDAQ: MBLY",
+    founded: "1999",
+    employees: "~3,500",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+12%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A computer-vision specialist whose driver-assistance footprint turns perception into a scaled automotive platform.",
+    thesisKo: "운전자 보조 시스템을 통해 인지 기술을 대규모 자동차 플랫폼으로 확장하는 비전 전문 기업입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "JERUSALEM",
+    chart: [6, 7, 8, 7, 9, 10, 9, 11, 12, 11, 13, 14, 15],
+    news: makeFallbackNews("MOBILEYE", "https://www.mobileye.com/news/", [
+      "Mobileye extends its driver-assistance stack toward higher autonomy",
+      "Computer vision remains the bridge between edge AI and mobility economics",
+    ], [
+      "Mobileye, 운전자 보조 스택을 고도 자율주행으로 확장",
+      "컴퓨터 비전이 엣지 AI와 모빌리티 경제성을 잇는 다리로 부상",
+    ]),
+  },
+  {
+    id: "alibaba",
+    name: "Alibaba",
+    country: "China",
+    city: "Hangzhou",
+    mapNames: ["China"],
+    coordinates: [120.1551, 30.2741],
+    sector: "cloud",
+    category: "Cloud AI platform",
+    categoryKo: "클라우드 AI 플랫폼",
+    role: "Cloud + Commerce",
+    roleKo: "클라우드·커머스",
+    status: "PUBLIC",
+    ticker: "NYSE: BABA / HKEX: 9988",
+    founded: "1999",
+    employees: "~169,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+15%",
+    signalLabel: "HIGH SIGNAL",
+    signalTone: "orange",
+    thesis: "A large regional cloud and commerce network where AI services, data gravity, and infrastructure reinforce one another.",
+    thesisKo: "AI 서비스·데이터 중력·인프라가 서로 강화되는 대형 지역 클라우드·커머스 네트워크입니다.",
+    watchlist: false,
+    showLabel: false,
+    markerLabel: "HANGZHOU",
+    chart: [5, 6, 8, 7, 10, 11, 12, 13, 12, 14, 15, 17, 19],
+    news: makeFallbackNews("ALIBABA", "https://www.alibabagroup.com/en-US/news", [
+      "Alibaba Cloud makes AI services a larger part of its regional platform stack",
+      "Commerce data and infrastructure capacity become a competitive AI loop",
+    ], [
+      "Alibaba Cloud, 지역 플랫폼 스택에서 AI 서비스 비중 확대",
+      "커머스 데이터와 인프라 역량이 경쟁력 있는 AI 순환고리로 연결",
+    ]),
+  },
+  {
+    id: "zoho",
+    name: "Zoho",
+    country: "India",
+    city: "Chennai",
+    mapNames: ["India"],
+    coordinates: [80.2707, 13.0827],
+    sector: "applied",
+    category: "AI business software",
+    categoryKo: "AI 비즈니스 소프트웨어",
+    role: "SaaS + Automation",
+    roleKo: "SaaS·업무 자동화",
+    status: "PRIVATE",
+    ticker: "PRIVATE",
+    founded: "1996",
+    employees: "~18,000",
+    funding: "Bootstrapped",
+    valuation: "Private",
+    latestRound: "Private company",
+    signal: "+11%",
+    signalLabel: "EMERGING",
+    signalTone: "orange",
+    thesis: "A bootstrapped SaaS ecosystem using embedded AI and automation to reach long-tail businesses outside the usual hubs.",
+    thesisKo: "임베디드 AI와 자동화로 익숙한 허브 밖의 중소기업까지 도달하는 부트스트랩 SaaS 생태계입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "CHENNAI",
+    chart: [3, 4, 5, 5, 7, 8, 7, 9, 10, 11, 10, 12, 14],
+    news: makeFallbackNews("ZOHO", "https://www.zoho.com/news/", [
+      "Zoho embeds AI assistants across its long-tail business software suite",
+      "India’s SaaS ecosystem looks beyond foundation models toward distribution",
+    ], [
+      "Zoho, 중소기업용 업무 소프트웨어 전반에 AI 어시스턴트 내장",
+      "인도 SaaS 생태계가 파운데이션 모델에서 유통 계층으로 시선 이동",
+    ]),
+  },
+  {
+    id: "deepl",
+    name: "DeepL",
+    country: "Germany",
+    city: "Cologne",
+    mapNames: ["Germany"],
+    coordinates: [6.9603, 50.9375],
+    sector: "applied",
+    category: "Language AI software",
+    categoryKo: "언어 AI 소프트웨어",
+    role: "Translation + Enterprise",
+    roleKo: "번역·엔터프라이즈",
+    status: "PRIVATE",
+    ticker: "PRIVATE",
+    founded: "2017",
+    employees: "~1,000",
+    funding: "$1B+",
+    valuation: "Private",
+    latestRound: "Growth capital",
+    signal: "+14%",
+    signalLabel: "WATCH",
+    signalTone: "blue",
+    thesis: "A focused language-AI company turning translation quality and workflow integration into an enterprise wedge.",
+    thesisKo: "번역 품질과 업무 통합을 기업 시장의 진입점으로 만드는 집중형 언어 AI 기업입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "COLOGNE",
+    chart: [4, 6, 5, 7, 8, 9, 10, 9, 11, 12, 13, 13, 15],
+    news: makeFallbackNews("DEEPL", "https://www.deepl.com/en/blog", [
+      "DeepL moves beyond translation into broader enterprise language workflows",
+      "Specialized language AI keeps a distinct lane beside general-purpose models",
+    ], [
+      "DeepL, 번역을 넘어 기업 언어 업무 흐름으로 확장",
+      "전문 언어 AI가 범용 모델과 다른 독자적 영역을 유지",
+    ]),
+  },
+  {
+    id: "abb",
+    name: "ABB",
+    country: "Switzerland",
+    city: "Zurich",
+    mapNames: ["Switzerland"],
+    coordinates: [8.5417, 47.3769],
+    sector: "robotics",
+    category: "Industrial automation",
+    categoryKo: "산업 자동화",
+    role: "Robots + Electrification",
+    roleKo: "로봇·전기화",
+    status: "PUBLIC",
+    ticker: "SIX: ABBN",
+    founded: "1988",
+    employees: "~105,000",
+    funding: "Public",
+    valuation: "Public market",
+    latestRound: "Public market",
+    signal: "+10%",
+    signalLabel: "EMERGING",
+    signalTone: "blue",
+    thesis: "An industrial technology platform where robotics, electrification, and machine intelligence meet real-world capex.",
+    thesisKo: "로보틱스·전기화·머신 인텔리전스가 실제 설비투자와 만나는 산업 기술 플랫폼입니다.",
+    watchlist: false,
+    showLabel: true,
+    markerLabel: "ZURICH",
+    chart: [6, 7, 8, 8, 9, 10, 9, 11, 12, 12, 13, 14, 15],
+    news: makeFallbackNews("ABB", "https://new.abb.com/news", [
+      "ABB links robotics and electrification to the next industrial AI cycle",
+      "Factory intelligence becomes a capex story beyond software multiples",
+    ], [
+      "ABB, 로보틱스와 전기화를 차기 산업 AI 사이클로 연결",
+      "공장 인텔리전스가 소프트웨어 배수를 넘어 설비투자 스토리로 확장",
+    ]),
+  },
 ];
 
 const countryLanes = [
-  { name: "United States", mapNames: ["United States of America"], count: 42, status: "HIGH SIGNAL", tone: "orange" },
-  { name: "China", mapNames: ["China"], count: 35, status: "HIGH SIGNAL", tone: "orange" },
-  { name: "United Kingdom", mapNames: ["United Kingdom"], count: 12, status: "WATCH", tone: "blue" },
-  { name: "France", mapNames: ["France"], count: 10, status: "HIGH SIGNAL", tone: "orange" },
-  { name: "India", mapNames: ["India"], count: 28, status: "HIGH SIGNAL", tone: "orange" },
-  { name: "Japan", mapNames: ["Japan"], count: 15, status: "WATCH", tone: "blue" },
-  { name: "South Korea", mapNames: ["South Korea"], count: 13, status: "HIGH SIGNAL", tone: "orange" },
-  { name: "Germany", mapNames: ["Germany"], count: 9, status: "WATCH", tone: "blue" },
-  { name: "Singapore", mapNames: ["Singapore"], count: 7, status: "EMERGING", tone: "muted" },
+  { name: "United States", mapNames: ["United States of America"], count: 7, status: "HIGH SIGNAL", tone: "orange" },
+  { name: "China", mapNames: ["China"], count: 3, status: "HIGH SIGNAL", tone: "orange" },
+  { name: "United Kingdom", mapNames: ["United Kingdom"], count: 3, status: "WATCH", tone: "blue" },
+  { name: "South Korea", mapNames: ["South Korea"], count: 3, status: "HIGH SIGNAL", tone: "orange" },
+  { name: "France", mapNames: ["France"], count: 2, status: "HIGH SIGNAL", tone: "orange" },
+  { name: "Japan", mapNames: ["Japan"], count: 2, status: "WATCH", tone: "blue" },
+  { name: "Taiwan", mapNames: ["Taiwan"], count: 1, status: "HIGH SIGNAL", tone: "orange" },
+  { name: "Netherlands", mapNames: ["Netherlands"], count: 1, status: "WATCH", tone: "blue" },
+  { name: "India", mapNames: ["India"], count: 1, status: "EMERGING", tone: "muted" },
+  { name: "Germany", mapNames: ["Germany"], count: 1, status: "WATCH", tone: "blue" },
+  { name: "Israel", mapNames: ["Israel"], count: 1, status: "WATCH", tone: "blue" },
+  { name: "Switzerland", mapNames: ["Switzerland"], count: 1, status: "EMERGING", tone: "muted" },
+  { name: "Hong Kong", mapNames: ["Hong Kong"], count: 1, status: "WATCH", tone: "blue" },
+  { name: "United Arab Emirates", mapNames: ["United Arab Emirates"], count: 1, status: "EMERGING", tone: "muted" },
 ];
 
 const marketSignals = [
@@ -406,13 +1149,23 @@ const filterOptions = [
   { id: "PRIVATE", label: "PRIVATE" },
 ];
 
+const sectorOptions = [
+  { id: "all", label: "ALL SECTORS", labelKo: "전체 섹터" },
+  { id: "models", label: "MODELS & DATA", labelKo: "모델·데이터" },
+  { id: "semis", label: "COMPUTE & CHIPS", labelKo: "컴퓨트·반도체" },
+  { id: "cloud", label: "CLOUD & PLATFORMS", labelKo: "클라우드·플랫폼" },
+  { id: "applied", label: "ENTERPRISE & APPLIED", labelKo: "엔터프라이즈·응용" },
+  { id: "robotics", label: "VISION, ROBOTS & AUTO", labelKo: "비전·로봇·자율주행" },
+  { id: "biotech", label: "AI LIFE SCIENCE", labelKo: "AI 바이오·헬스케어" },
+];
+
 const uiCopy = {
   en: {
     eyebrow: "AI INVESTMENT INTELLIGENCE ATLAS",
     issue: "ISSUE 32",
     brief: "TODAY'S BRIEF",
     briefA: "Global AI investment remains concentrated in proven hubs, with pockets of acceleration across Europe and Asia.",
-    briefB: "Sovereign compute initiatives and frontier-model commoditization are reshaping local champions.",
+    briefB: "Models are one layer; chips, clouds, robots, enterprise software, and AI biotech carry the rest of the stack.",
     byline: "— The Editorial Board",
     selectedCompany: "SELECTED COMPANY",
     privateCompany: "AI COMPANY (PRIVATE)",
@@ -429,7 +1182,7 @@ const uiCopy = {
     dataMethod: "DATA METHOD",
     researchMode: "SNAPSHOT / RESEARCH MODE",
     title: "THE GLOBAL AI MAP",
-    subtitle: "COMPANIES, CLUSTERS & COMPUTE INFRASTRUCTURE",
+    subtitle: "AI COMPANIES ACROSS THE STACK · 6 SECTORS",
     find: "FIND A COMPANY",
     placeholder: "Search name, city, sector",
     inspect: "Click a country or company to inspect the signal.",
@@ -442,6 +1195,7 @@ const uiCopy = {
     feedUpdating: "DATA FEED: UPDATING",
     emergingNote: "EMERGING CLUSTERS",
     emergingNote2: "OUTSIDE THE USUAL VECTORS.",
+    sectorLayers: "AI SECTOR LAYERS",
     signalLayer: "SIGNAL LAYER",
     high: "HIGH / ACCELERATING",
     watch: "WATCH / RESEARCH",
@@ -489,7 +1243,7 @@ const uiCopy = {
     issue: "ISSUE 32",
     brief: "오늘의 브리프",
     briefA: "글로벌 AI 투자는 검증된 허브에 집중돼 있지만, 유럽과 아시아에서 가속 신호가 나타나고 있습니다.",
-    briefB: "주권형 컴퓨트와 프런티어 모델의 상품화가 지역 챔피언의 판도를 바꾸고 있습니다.",
+    briefB: "모델은 한 층일 뿐이며, 칩·클라우드·로봇·기업 소프트웨어·AI 바이오가 나머지 스택을 채웁니다.",
     byline: "— 편집위원회",
     selectedCompany: "선택 기업",
     privateCompany: "AI 기업 (비상장)",
@@ -506,7 +1260,7 @@ const uiCopy = {
     dataMethod: "데이터 방법론",
     researchMode: "스냅샷 / 리서치 모드",
     title: "글로벌 AI 지도",
-    subtitle: "기업 · 클러스터 · 컴퓨트 인프라",
+    subtitle: "AI 산업 전반의 기업 · 인프라 · 응용",
     find: "기업 찾기",
     placeholder: "이름, 도시, 섹터 검색",
     inspect: "국가 또는 기업을 클릭해 시그널을 확인하세요.",
@@ -519,6 +1273,7 @@ const uiCopy = {
     feedUpdating: "데이터 피드: 업데이트 중",
     emergingNote: "신흥 클러스터",
     emergingNote2: "익숙한 벡터 밖의 가속.",
+    sectorLayers: "AI 산업 레이어",
     signalLayer: "시그널 레이어",
     high: "높음 / 가속",
     watch: "관찰 / 리서치",
@@ -565,6 +1320,7 @@ const uiCopy = {
 
 const countryNamesKo = {
   "United States": "미국",
+  "United States of America": "미국",
   China: "중국",
   "United Kingdom": "영국",
   France: "프랑스",
@@ -572,6 +1328,10 @@ const countryNamesKo = {
   Japan: "일본",
   "South Korea": "대한민국",
   Germany: "독일",
+  Taiwan: "대만",
+  Netherlands: "네덜란드",
+  Israel: "이스라엘",
+  Switzerland: "스위스",
   Singapore: "싱가포르",
   "Hong Kong": "홍콩",
   "United Arab Emirates": "아랍에미리트",
@@ -580,11 +1340,27 @@ const countryNamesKo = {
 const cityNamesKo = {
   "Hong Kong": "홍콩",
   "San Francisco": "샌프란시스코",
+  "Santa Clara": "산타클라라",
+  Redmond: "레드먼드",
+  Denver: "덴버",
+  Austin: "오스틴",
   Paris: "파리",
   Hangzhou: "항저우",
   Tokyo: "도쿄",
-  "Santa Clara": "산타클라라",
   London: "런던",
+  Cambridge: "케임브리지",
+  Hsinchu: "신주",
+  Veldhoven: "벨트호벤",
+  Suwon: "수원",
+  Icheon: "이천",
+  Seongnam: "성남",
+  Guangzhou: "광저우",
+  Oshino: "오시노",
+  "Salt Lake City": "솔트레이크시티",
+  Jerusalem: "예루살렘",
+  Chennai: "첸나이",
+  Cologne: "쾰른",
+  Zurich: "취리히",
   "Abu Dhabi": "아부다비",
 };
 
@@ -623,7 +1399,8 @@ function getCopy(language, key) {
 }
 
 function getCompanyText(company, field, language) {
-  return language === "ko" ? companyCopyKo[company.id]?.[field] ?? company[field] : company[field];
+  if (language !== "ko") return company[field];
+  return companyCopyKo[company.id]?.[field] ?? company[`${field}Ko`] ?? company[field];
 }
 
 function getCountryLabel(country, language) {
@@ -653,9 +1430,14 @@ function getFilterLabel(filterId, language) {
   return filterId === "PUBLIC" ? getCopy(language, "public") : getCopy(language, "private");
 }
 
+function getSectorLabel(sectorId, language) {
+  const option = sectorOptions.find((sector) => sector.id === sectorId);
+  return language === "ko" ? option?.labelKo ?? sectorId : option?.label ?? sectorId;
+}
+
 function getNewsHeadline(news, company, index, language) {
   if (news.isLive || language !== "ko") return news.headline;
-  return newsHeadlineKo[company.id]?.[index] ?? news.headline;
+  return newsHeadlineKo[company.id]?.[index] ?? news.headlineKo ?? news.headline;
 }
 
 function formatGdeltDate(value, language) {
@@ -783,11 +1565,12 @@ function SignalChart({ values }) {
 }
 
 export function App() {
-  const [selectedId, setSelectedId] = useState("sensetime");
+  const [selectedId, setSelectedId] = useState("nvidia");
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [search, setSearch] = useState("");
   const [activeNav, setActiveNav] = useState("atlas");
   const [signalFilter, setSignalFilter] = useState("all");
+  const [sectorFilter, setSectorFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [newsOpen, setNewsOpen] = useState(false);
   const [briefingOpen, setBriefingOpen] = useState(false);
@@ -798,7 +1581,7 @@ export function App() {
   const [marketStatus, setMarketStatus] = useState("loading");
   const [marketUpdatedAt, setMarketUpdatedAt] = useState(null);
   const [marketRefreshToken, setMarketRefreshToken] = useState(0);
-  const [newsItems, setNewsItems] = useState(companies[0].news);
+  const [newsItems, setNewsItems] = useState(companies.find((company) => company.id === "nvidia")?.news ?? companies[0].news);
   const [newsStatus, setNewsStatus] = useState("loading");
 
   const selectedCompany = companies.find((company) => company.id === selectedId) ?? companies[0];
@@ -857,13 +1640,14 @@ export function App() {
   const visibleCompanies = useMemo(() => {
     const query = search.trim().toLowerCase();
     return companies.filter((company) => {
-      const matchesSearch = !query || [company.name, company.country, company.category, company.city].some((field) => field.toLowerCase().includes(query));
+      const matchesSearch = !query || [company.name, company.country, company.category, company.role, company.city, getSectorLabel(company.sector, "en")].some((field) => field.toLowerCase().includes(query));
       const matchesFilter = signalFilter === "all" || company.status === signalFilter;
+      const matchesSector = sectorFilter === "all" || company.sector === sectorFilter;
       const matchesCountry = selectedCountry === "all" || company.country === selectedCountry;
       const matchesNav = activeNav !== "watchlist" || company.watchlist;
-      return matchesSearch && matchesFilter && matchesCountry && matchesNav;
+      return matchesSearch && matchesFilter && matchesSector && matchesCountry && matchesNav;
     });
-  }, [activeNav, search, selectedCountry, signalFilter]);
+  }, [activeNav, search, selectedCountry, sectorFilter, signalFilter]);
 
   function selectCompany(id) {
     setSelectedId(id);
@@ -876,6 +1660,12 @@ export function App() {
     setSelectedCountry(country);
     const firstCompany = companies.find((company) => company.country === country);
     if (firstCompany) selectCompany(firstCompany.id);
+  }
+
+  function resetView() {
+    setSelectedCountry("all");
+    setSectorFilter("all");
+    setSearch("");
   }
 
   function handleNav(id) {
@@ -896,7 +1686,7 @@ export function App() {
 
   function handleMapCountry(geoName) {
     const lane = countryLanes.find((country) => country.mapNames.includes(geoName));
-    const company = companies.find((item) => item.mapNames.includes(geoName));
+    const company = visibleCompanies.find((item) => item.mapNames.includes(geoName)) ?? companies.find((item) => item.mapNames.includes(geoName));
     if (lane) setSelectedCountry(lane.name);
     if (company) selectCompany(company.id);
   }
@@ -905,6 +1695,7 @@ export function App() {
   const marketFeedLabel = marketStatus === "live" ? copy.feedLive : marketStatus === "scheduled" ? copy.feedScheduled : marketStatus === "loading" ? copy.feedUpdating : copy.feedSnapshot;
   const newsFeedLabel = newsStatus === "live" ? copy.live : newsStatus === "loading" ? copy.feedUpdating : copy.fallback;
   const marketAsOf = marketUpdatedAt ? new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" }).format(new Date(marketUpdatedAt)).toUpperCase() : "—";
+  const coverageLabel = language === "ko" ? `추적 유니버스: ${companies.length}개 기업 / ${sectorOptions.length - 1}개 산업 레이어` : `TRACKED UNIVERSE: ${companies.length} COMPANIES / ${sectorOptions.length - 1} AI SECTORS`;
 
   return (
     <main className="app-shell" style={{ "--paper-texture": `url(${import.meta.env.BASE_URL}paper-texture.png)` }}>
@@ -999,10 +1790,20 @@ export function App() {
           <div className="map-toolbar">
             <span>{copy.projection}</span>
             <span>{copy.center}</span>
+            <span className="coverage-label">{coverageLabel}</span>
             <div className="map-toolbar-actions">
-              <button type="button" onClick={() => setSelectedCountry("all")}><i className="ph ph-arrows-out" /> {copy.reset}</button>
+              <button type="button" onClick={resetView}><i className="ph ph-arrows-out" /> {copy.reset}</button>
               <span className={`live-label ${marketStatus === "live" ? "is-live" : ""}`}><i className="ph ph-broadcast" /> {marketFeedLabel}</span>
             </div>
+          </div>
+
+          <div className="sector-ribbon" aria-label={copy.sectorLayers}>
+            <span className="sector-ribbon-label">{copy.sectorLayers}</span>
+            {sectorOptions.map((sector) => (
+              <button key={sector.id} type="button" className={sectorFilter === sector.id ? "is-active" : ""} onClick={() => setSectorFilter(sector.id)} aria-pressed={sectorFilter === sector.id}>
+                {language === "ko" ? sector.labelKo : sector.label}
+              </button>
+            ))}
           </div>
 
           <div className="map-canvas">
@@ -1038,7 +1839,8 @@ export function App() {
               </Geographies>
               {visibleCompanies.map((company) => (
                 <Marker key={company.id} coordinates={company.coordinates} onClick={() => selectCompany(company.id)}>
-                  <g className={`company-marker ${company.id === selectedId ? "is-selected" : ""} ${company.signalTone}`} role="button" tabIndex="0" aria-label={`${language === "ko" ? "선택" : "Select"} ${company.name}`}>
+                  <g className={`company-marker ${company.id === selectedId ? "is-selected" : ""} ${company.signalTone} sector-${company.sector}`} role="button" tabIndex="0" aria-label={`${language === "ko" ? "선택" : "Select"} ${company.name}`}>
+                    <title>{company.name} · {getCompanyText(company, "category", language)}</title>
                     <circle className="marker-orbit" r={company.id === selectedId ? 10 : 5.2} />
                     <circle className="marker-core" r={company.id === selectedId ? 4.2 : 2.4} />
                     {company.showLabel && <text x={company.id === "sakana" ? -10 : 12} y={company.id === selectedId ? -13 : 4} className="marker-label">{company.markerLabel}</text>}
@@ -1063,7 +1865,7 @@ export function App() {
             <div className="map-controls" aria-label={language === "ko" ? "지도 조작" : "map controls"}>
               <button type="button" aria-label={language === "ko" ? "확대" : "Zoom in"}><i className="ph ph-plus" /></button>
               <button type="button" aria-label={language === "ko" ? "축소" : "Zoom out"}><i className="ph ph-minus" /></button>
-              <button type="button" aria-label={language === "ko" ? "지도 중앙 정렬" : "Recenter map"} onClick={() => setSelectedCountry("all")}><i className="ph ph-crosshair" /></button>
+              <button type="button" aria-label={language === "ko" ? "지도 중앙 정렬" : "Recenter map"} onClick={resetView}><i className="ph ph-crosshair" /></button>
             </div>
           </div>
 

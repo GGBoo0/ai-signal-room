@@ -582,11 +582,53 @@ input:focus-visible {
   font-size: 8px;
 }
 
+.coverage-label {
+  color: var(--orange);
+}
+
 .map-toolbar-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.sector-ribbon {
+  min-height: 29px;
+  padding: 4px 0 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.sector-ribbon-label {
+  margin-right: 3px;
+  color: var(--orange);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sector-ribbon button {
+  padding: 4px 6px 3px;
+  border: 1px solid var(--line-soft);
+  background: rgba(243, 238, 227, 0.42);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sector-ribbon button:hover,
+.sector-ribbon button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .map-toolbar button {
